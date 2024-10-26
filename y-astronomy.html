@@ -1,0 +1,139 @@
+<head>
+    <title>YAS-Sun calculator</title>
+    <style>
+        .column {
+            padding-left: 2%;
+            width: 45%;
+            float: left;
+        }
+        p {
+            color: blue;
+            font-size: large;
+            font-weight: 800;
+            font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            border-bottom: dashed black;
+        }
+        table {
+            display: block;
+        }
+        th, td {
+            border: solid;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="background-color: skyblue;">Y-Astronomy Sun calculator</h2>
+    <div class="row"><div class="column"> <form action="javascript: ;"  onsubmit="process_form(this)">
+        <span style="font-size: large;"> -- Select one or more of the following functions to begin -- </span>
+        <p>1. Sunrise/Sunset time and direction, day length <input type="checkbox" oninput="hide_show('func_1')"></p>
+        <div style="display: block;" id="func_1">
+            <table><tr>
+                <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th>
+            </tr><tr">
+                <td><input type="number" id="lon_1" min="-180" max="180" step="0.01" value="120"></td> 
+                <td><input type="number" id="lat_1" min="-90" max="90" step="0.01" value="35"></td> 
+                <td><input type="number" id="tz_1" min="-12" max="12" value="8"></td> 
+                <td><input type="date" id="date_1" value="2024-03-21"></td><td><button type="submit" value="calc_1">Calculate</button></td>
+            </tr></table> -- Results -- 
+            <table style="color: cornflowerblue; display: none;" id="res_1">
+                <tr><th>Sunrise</th><th>Direction</th><th>Sunset</th><th>Direction</th>
+                    <th>Day length</th><th style="font-size: small;">Sun trajectory of the day </th></tr>
+                <tr style="color: black;"><td id="_1_sr"></td><td id="_1_ss"></td><td id="_1_dl"></td>
+                    <td><input type="submit" id="plot_1" value="Draw trajectory >>"></td></tr>
+            </table>
+        </div> <p>2. Sun direction at any time of the day</p>
+            <table><tr>
+                <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th><th>Time</th>
+            </tr><tr">
+                <td><input type="number" id="lon_2" min="-180" max="180" step="0.01" value="120"></td> 
+                <td><input type="number" id="lat_2" min="-90" max="90" step="0.01" value="35"></td> 
+                <td><input type="number" id="tz_2" min="-12" max="12" value="8"></td> 
+                <td><input type="date" id="date_2" value="2024-03-21"></td>
+                <td><input type="time" id="time_2" value="2024-03-21"></td>
+                <td><button type="submit" value="calc_2">Calculate</button></td>
+            </tr></table> <div id="res_2" style="display: none; color: cornflowerblue;">
+                Sun direction: ; <br> Sun trajectory of the day: <input type="submit" id="plot_2" value="Draw >>">
+            </div>
+    </form></div><div class="column">
+        <canvas></canvas>
+    </div></div>
+    <script>
+        function hide_show(sec_id) {
+            if (document.getElementById(sec_id).style.display == "none") {
+                document.getElementById(sec_id).style.display = "block";
+            } else {
+                document.getElementById(sec_id).style.display = "none";
+            }
+        }
+        function deg_to_rad(deg) {
+            return deg / 180 * Math.PI;
+        } function rad_to_deg(rad) {
+            return 180 * rad / Math.PI
+        }
+        function date_difference(date1, date2) {
+            return Math.floor(date1 - date2) / 86400000;
+        } function time_convert(secs) {
+            const h = parseInt(secs / 3600);
+            const m = parseInt((secs - 3600*h) / 60);
+            const s = secs - 3600*h - 60*m;
+            return [h, m, s]
+        } function time_display(secs) {
+            let tcv = time_convert(secs);
+            for (i = 0; i < tcv.length; i++) {
+                if (tcv[i] < 10) {
+                    tcv[i] = "0"+String(tcv[i]);
+                }
+            }
+            return tcv[0]+":"+tcv[1]+":"+tcv[2]
+        }
+        function sun_direct_lat_sin(date) {
+            const y = date.getFullYear();
+            const sprg_eqnx_days = date_difference(date, new Date(y, 2, 21))
+            const ydays = (y % 400 === 0 || (y % 100 !== 0 && y % 4 === 0)) ? 366 : 365
+            const phase = 2 * Math.PI * sprg_eqnx_days / ydays;
+            let res = Math.sin(phase) * Math.sin(deg_to_rad(23.5));
+            if (res > 1) {
+                res = 1;
+            }
+            return res;
+        } function day_length(date, lat) {
+            const pss = sun_direct_lat_sin(date);
+            const sbs = Math.tan(lat) * pss / Math.sqrt(1-pss*pss);
+            let day_time_balance = 90;
+            if (sbs <= -1) {
+                day_time_balance = -90;
+            } else if (sbs < 1) {
+                day_time_balance = rad_to_deg(Math.asin(sbs));
+            }
+            return 86400 * (day_time_balance * 2 + 180) / 360
+        } function noon_seconds(tz, lon) {
+            return 43200 + 3600*(15 * tz - lon)/15
+        }
+
+        function sunrise_set() {
+            const lon = document.getElementById("lon_1").value
+            const lat = deg_to_rad(document.getElementById("lat_1").value);
+            const tz = document.getElementById("tz_1").value;
+            const date = new Date(document.getElementById("date_1").value)
+            const dl = day_length(date, lat);
+            const hdl = dl/2;
+            const noon = noon_seconds(tz, lon);
+            document.getElementById("res_1").style.display = "block";
+            document.getElementById("_1_sr").innerHTML = time_display(Math.round(noon - hdl));
+            document.getElementById("_1_ss").innerHTML = time_display(Math.round(noon + hdl));
+            document.getElementById("_1_dl").innerHTML = time_display(Math.round(dl));
+        }
+
+        function sun_direction() {
+            document.getElementById("res_2").style.display = "block";
+        }
+
+        function process_form(fm) {
+            if (document.activeElement.value == "calc_1") {
+                sunrise_set();
+            } else if (document.activeElement.value == "calc_2") {
+                sun_direction();
+            }
+        }
+    </script>
+</body>
