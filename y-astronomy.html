@@ -30,11 +30,12 @@
     </style>
 </head>
 <body>
-    <h2 style="background-color: skyblue;">Y-Astronomy Sun calculator</h2>
+    <h2 style="background-color: skyblue;">Y-Astronomy Sun calculator and Visualization</h2>
     <div class="row"><div class="column"> <form action="javascript: ;"  onsubmit="process_form(this)">
-        <span style="font-size: large; background-color: lightgoldenrodyellow;"> -- Select one or more of the following functions to begin -- </span>
-        <p>1. Sunrise/Sunset time and direction, day length <input type="checkbox" oninput="hide_show('func_1')"></p>
-        <div style="display: block;" id="func_1">
+        <a href="https://github.com/yingyan797/no-backend">[By yingyan797]</a>
+        <i style="font-size: large; background-color: lightgoldenrodyellow;"> -- Select one or more of the functions to begin -- </i>
+        <p>1. Sunrise/Sunset time and direction, Day length <input type="checkbox" oninput="hide_show('func_1')"></p>
+        <div style="display: none;" id="func_1">
             <table><tr>
                 <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th>
             </tr><tr">
@@ -50,7 +51,7 @@
                     <td><input type="submit" id="plot_1" value="Draw trajectory >>"></td></tr>
             </table>
         </div> <p>2. Sun height and direction at any time of the day <input type="checkbox" oninput="hide_show('func_2')"></p>
-        <div style="display: block;" id="func_2">
+        <div style="display: none;" id="func_2">
             <table><tr>
                 <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th><th>Time</th>
             </tr><tr">
@@ -63,7 +64,18 @@
             </tr></table> <div id="res_2" style="display: none; color: cornflowerblue;">
                 Sun height: <textarea id="_2_sh" rows="1"></textarea> ; Sun direction: <textarea id="_2_sd" rows="1"></textarea> ; <br> 
                 Sun trajectory of the day: <input type="submit" id="plot_2" value="Draw >>">
-            </div></div>
+        </div></div> <p>3. Time(s) of the day when Sun reaches a certain height/direction</p>
+        <i style="background-color: lightgoldenrodyellow;">Other calculators</i><br>
+        <p>1. The distance between any two locations on Earth <input type="checkbox" oninput="hide_show('func_a1')"></p>
+        <div style="display: none;" id="func_a1"><table>
+            <tr><td>Locations</td><th>Longitude</th><th>Latitude</th></tr>
+            <tr><th>1</th><td><input type="number" id="lon_a1_1" min="-180" max="180" step="0.01" value="120"></td>
+                <td><input type="number" id="lat_a1_1" min="-90" max="90" step="0.01" value="35"></td>
+                <th>Earth radius (km)</th><td><input type="number" id="radius_a1" value="6371"></td></tr>
+            <tr><th>2</th><td><input type="number" id="lon_a1_2" min="-180" max="180" step="0.01" value="25"></td> 
+                <td><input type="number" id="lat_a1_2" min="-90" max="90" step="0.01" value="45"></td>
+                <td>Distance: <button type="submit" value="calc_a1">Calculate >></button></td><td id="res_a1"></td></tr>
+        </table></div>
     </form></div><div class="column">
         <canvas></canvas>
     </div></div>
@@ -220,11 +232,26 @@
             document.getElementById("_2_sd").innerText = drn +" - "+ direction_class(drn);
         }
 
+        function sphere_distance() {
+            const lon1 = deg_to_rad(document.getElementById("lon_a1_1").value);
+            const lon2 = deg_to_rad(document.getElementById("lon_a1_2").value);
+            const lat1 = deg_to_rad(document.getElementById("lat_a1_1").value);
+            const lat2 = deg_to_rad(document.getElementById("lat_a1_2").value);
+            const rise2 = Math.pow(Math.sin(lat1)-Math.sin(lat2), 2);
+            const ra = Math.cos(lat1);
+            const rb = Math.cos(lat2);
+            const run2 =ra*ra + rb*rb - 2*ra*rb*Math.cos(lon1 - lon2);
+            const ang = 2*Math.asin(Math.sqrt(rise2+run2)/2);
+            const d = document.getElementById("radius_a1").value*ang
+            document.getElementById("res_a1").innerHTML = Math.round(100*d)/100 + " km";
+        }
+
         function process_form(fm) {
             try {
                 switch (document.activeElement.value) {
                     case "calc_1": sunrise_set(); break;
                     case "calc_2": sun_position(); break;
+                    case "calc_a1": sphere_distance(); break;
                 } 
             } catch(err) {
                 alert("[Debug message] "+err);
