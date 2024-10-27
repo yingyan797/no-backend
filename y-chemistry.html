@@ -10,7 +10,8 @@
             font-size: large;
             background-color: lightgoldenrodyellow;
             font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-
+            padding-bottom: 5px;
+            padding-left: 10px;
         }
     </style>
  </head>
@@ -29,7 +30,7 @@
             <tr><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Lanthanum: 57' onclick="enter_key('La')">La</button></td><td><button id='key' title='Cerium: 58' onclick="enter_key('Ce')">Ce</button></td><td><button id='key' title='Praseodymium: 59' onclick="enter_key('Pr')">Pr</button></td><td><button id='key' title='Neodymium: 60' onclick="enter_key('Nd')">Nd</button></td><td><button id='key' title='Promethium: 61' onclick="enter_key('Pm')">Pm</button></td><td><button id='key' title='Samarium: 62' onclick="enter_key('Sm')">Sm</button></td><td><button id='key' title='Europium: 63' onclick="enter_key('Eu')">Eu</button></td><td><button id='key' title='Gadolinium: 64' onclick="enter_key('Gd')">Gd</button></td><td><button id='key' title='Terbium: 65' onclick="enter_key('Tb')">Tb</button></td><td><button id='key' title='Dysprosium: 66' onclick="enter_key('Dy')">Dy</button></td><td><button id='key' title='Holmium: 67' onclick="enter_key('Ho')">Ho</button></td><td><button id='key' title='Erbium: 68' onclick="enter_key('Er')">Er</button></td><td><button id='key' title='Thulium: 69' onclick="enter_key('Tm')">Tm</button></td><td><button id='key' title='Ytterbium: 70' onclick="enter_key('Yb')">Yb</button></td><td><button id='key' title='Lutetium: 71' onclick="enter_key('Lu')">Lu</button></td></tr>
             <tr><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Actinium: 89' onclick="enter_key('Ac')">Ac</button></td><td><button id='key' title='Thorium: 90' onclick="enter_key('Th')">Th</button></td><td><button id='key' title='Protactinium: 91' onclick="enter_key('Pa')">Pa</button></td><td><button id='key' title='Uranium: 92' onclick="enter_key('U')">U</button></td><td><button id='key' title='Neptunium: 93' onclick="enter_key('Np')">Np</button></td><td><button id='key' title='Plutonium: 94' onclick="enter_key('Pu')">Pu</button></td><td><button id='key' title='Americium: 95' onclick="enter_key('Am')">Am</button></td><td><button id='key' title='Curium: 96' onclick="enter_key('Cm')">Cm</button></td><td><button id='key' title='Berkelium: 97' onclick="enter_key('Bk')">Bk</button></td><td><button id='key' title='Californium: 98' onclick="enter_key('Cf')">Cf</button></td><td><button id='key' title='Einsteinium: 99' onclick="enter_key('Es')">Es</button></td><td><button id='key' title='Fermium: 100' onclick="enter_key('Fm')">Fm</button></td><td><button id='key' title='Mendelevium: 101' onclick="enter_key('Md')">Md</button></td><td><button id='key' title='Nobelium: 102' onclick="enter_key('No')">No</button></td><td><button id='key' title='Lawrencium: 103' onclick="enter_key('Lr')">Lr</button></td></tr>
         </table></div> <button type="submit" value="fill" 
-        onclick="calculate()" style="width: 150;">Balance equation >></button> | <span id="res"></span> 
+        onclick="calculate()" style="width: 150;">Balance equation >></button><span id="res"></span> 
     </form>
     
     <script>
@@ -294,19 +295,19 @@
             })
             if (elems[0].length != elems[1].length) {
                 alert("Not equal number of elements: left="+elems[0].length+", right="+elems[1].length);
-                return false;
+                return "Error";
             }
             for (i = 0; i < elems[0].length; i++) {
                 if (elems[0][i] != elems[1][i]) {
                     alert("Not matching elements on both sides: "+elems[0]+"/"+elems[1]+" (left: "+elems[0][i]+", right:"+elems[1][i]+")");
-                    return false;
+                    return "Error";
                 }
             }
             elems = elems[0];
             const dim = compounds[0].length+compounds[1].length;
             if (dim < elems.length) {
                 alert("Too many elements and not enough reactant/products. Cannot find a solution")
-                return false;
+                return "Error";
             }
             let matrix = Array.from({ length: dim }, () => new Array(dim+1).fill(0));
             for (k = 0; k < elems.length; k++) {
@@ -328,17 +329,29 @@
             let sol = _gaussian_elim(matrix);
             sol = _normalize_solutions(sol);
             let res_html = "";
-            for (i = 0; i < compounds[0].length; i++) {
+            let lr = 0;
+            for (i = 0; i < dim; i++) {
+                let j = i;
+                if (i >= compounds[0].length) {
+                    if (lr == 0) {
+                        lr = 1;
+                        res_html = res_html.slice(0,-3) + " == ";
+                    }
+                    j = i - compounds[0].length;
+                }
                 if (sol[i] != 1)
-                    res_html += "<b style='color: blue'>"+sol[i]+"</b>"
-                res_html += eq_input[0][i]+" + ";
+                    res_html += "<b style='color: blueviolet'>"+sol[i]+"</b>"
+
+                for (k = 0; k < eq_input[lr][j].length; k++) {
+                    const c = eq_input[lr][j][k];
+                    if (c.match("[0-9]"))
+                        res_html += "<sub>"+c+"</sub>";
+                    else 
+                        res_html += c;
+                }
+                res_html += " + ";
             }
-            res_html = res_html.slice(0,-3) + " == ";
-            for (i = 0; i < compounds[1].length; i++) {
-                if (sol[compounds[0].length+i] != 1)
-                    res_html += "<b style='color: blue'>"+sol[compounds[0].length+i]+"</b>"
-                res_html += eq_input[1][i]+" + ";
-            }
+            
             return res_html.slice(0,-3)
         }
     
