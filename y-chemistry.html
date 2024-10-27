@@ -4,15 +4,22 @@
         button {
             width: 50px;
             height: 35px;
+        }   
+        span {
+            border-bottom: solid cornflowerblue;
+            font-size: large;
+            background-color: lightgoldenrodyellow;
+            font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
         }
     </style>
  </head>
 <body>
     <h3 style="background-color: #6495ed;">Chemistry equation balancing</h3>
     <form action="javascript: ;">
-        Equation: <input type="text" id="equation" value="" style="width: 70%; font-size: large; color: cornflowerblue;"></button><br>
+        Equation: <input type="text" id="equation" value="H2O -> H2 + O2" style="width: 70%; font-size: large; color: cornflowerblue;"></button><br>
         <div style="padding-left: 75px; padding-top: 10px; padding-bottom: 10px;"><table style='border: dashed; background-color: lightcyan;'>
-            <tr><td><button id='key' title='Hydrogen: 1' onclick="enter_key('H')">H</button></td><td><button id='key' title=': ' onclick="enter_key('0')">0</button></td><td><button id='key' title=': ' onclick="enter_key('1')">1</button></td><td><button id='key' title=': ' onclick="enter_key('2')">2</button></td><td><button id='key' title=': ' onclick="enter_key('3')">3</button></td><td><button id='key' title=': ' onclick="enter_key('4')">4</button></td><td><button id='key' title=': ' onclick="enter_key('5')">5</button></td><td><button id='key' title=': ' onclick="enter_key('6')">6</button></td><td><button id='key' title=': ' onclick="enter_key('7')">7</button></td><td><button id='key' title=': ' onclick="enter_key('8')">8</button></td><td><button id='key' title=': ' onclick="enter_key('9')">9</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('(')">(</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key(')')">)</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('+')">+</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('=')">=</button><td><button id='key' title='Delete one character' onclick="enter_key('Del')" style="background-color: lightgoldenrodyellow">Del</button></td><td><button id='key' title='Clear input' style="background-color: lightsalmon;" onclick="enter_key('AC')">AC</button></td><td><button id='key' title='Helium: 2' onclick="enter_key('He')">He</button></td></tr>
+            <tr><td><button id='key' title='Hydrogen: 1' onclick="enter_key('H')">H</button></td><td><button id='key' title=': ' onclick="enter_key('0')">0</button></td><td><button id='key' title=': ' onclick="enter_key('1')">1</button></td><td><button id='key' title=': ' onclick="enter_key('2')">2</button></td><td><button id='key' title=': ' onclick="enter_key('3')">3</button></td><td><button id='key' title=': ' onclick="enter_key('4')">4</button></td><td><button id='key' title=': ' onclick="enter_key('5')">5</button></td><td><button id='key' title=': ' onclick="enter_key('6')">6</button></td><td><button id='key' title=': ' onclick="enter_key('7')">7</button></td><td><button id='key' title=': ' onclick="enter_key('8')">8</button></td><td><button id='key' title=': ' onclick="enter_key('9')">9</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('(')">(</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key(')')">)</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('+')">+</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('->')">-></button><td><button id='key' title='Delete one character' onclick="enter_key('Del')" style="background-color: lightgoldenrodyellow">Del</button></td><td><button id='key' title='Clear input' style="background-color: lightsalmon;" onclick="enter_key('AC')">AC</button></td><td><button id='key' title='Helium: 2' onclick="enter_key('He')">He</button></td></tr>
             <tr><td><button id='key' title='Lithium: 3' onclick="enter_key('Li')">Li</button></td><td><button id='key' title='Beryllium: 4' onclick="enter_key('Be')">Be</button></td><td><button disabled></button></td><td><button id='key' title=': ' onclick="enter_key('OH')">OH</button></td><td><button id='key' title=': ' onclick="enter_key('CO3')">CO3</button></td><td><button id='key' title=': ' onclick="enter_key('NO3')">NO3</button></td><td><button id='key' title=': ' onclick="enter_key('SO4')">SO4</button></td><td><button id='key' title=': ' onclick="enter_key('CH')">CH</button></td><td><button id='key' title=': ' onclick="enter_key('O2')">O2</button></td><td><button id='key' title=': ' onclick="enter_key('H2O')">H2O</button></td><td><button id='key' title=': ' onclick="enter_key('CO2')">CO2</button></td><td><button id='key' title="To be used in combining 2 compounds (like CuSO4_5H2O)" style="background-color: skyblue; font-size: large;" onclick="enter_key('_')">_</button></td><td><button id='key' title='Boron: 5' onclick="enter_key('B')">B</button></td><td><button id='key' title='Carbon: 6' onclick="enter_key('C')">C</button></td><td><button id='key' title='Nitrogen: 7' onclick="enter_key('N')">N</button></td><td><button id='key' title='Oxygen: 8' onclick="enter_key('O')">O</button></td><td><button id='key' title='Fluorine: 9' onclick="enter_key('F')">F</button></td><td><button id='key' title='Neon: 10' onclick="enter_key('Ne')">Ne</button></td></tr>
             <tr><td><button id='key' title='Sodium: 11' onclick="enter_key('Na')">Na</button></td><td><button id='key' title='Magnesium: 12' onclick="enter_key('Mg')">Mg</button></td><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Aluminium: 13' onclick="enter_key('Al')">Al</button></td><td><button id='key' title='Silicon: 14' onclick="enter_key('Si')">Si</button></td><td><button id='key' title='Phosphorus: 15' onclick="enter_key('P')">P</button></td><td><button id='key' title='Sulfur: 16' onclick="enter_key('S')">S</button></td><td><button id='key' title='Chlorine: 17' onclick="enter_key('Cl')">Cl</button></td><td><button id='key' title='Argon: 18' onclick="enter_key('Ar')">Ar</button></td></tr>
             <tr><td><button id='key' title='Potassium: 19' onclick="enter_key('K')">K</button></td><td><button id='key' title='Calcium: 20' onclick="enter_key('Ca')">Ca</button></td><td><button id='key' title='Scandium: 21' onclick="enter_key('Sc')">Sc</button></td><td><button id='key' title='Titanium: 22' onclick="enter_key('Ti')">Ti</button></td><td><button id='key' title='Vanadium: 23' onclick="enter_key('V')">V</button></td><td><button id='key' title='Chromium: 24' onclick="enter_key('Cr')">Cr</button></td><td><button id='key' title='Manganese: 25' onclick="enter_key('Mn')">Mn</button></td><td><button id='key' title='Iron: 26' onclick="enter_key('Fe')">Fe</button></td><td><button id='key' title='Cobalt: 27' onclick="enter_key('Co')">Co</button></td><td><button id='key' title='Nickel: 28' onclick="enter_key('Ni')">Ni</button></td><td><button id='key' title='Copper: 29' onclick="enter_key('Cu')">Cu</button></td><td><button id='key' title='Zinc: 30' onclick="enter_key('Zn')">Zn</button></td><td><button id='key' title='Gallium: 31' onclick="enter_key('Ga')">Ga</button></td><td><button id='key' title='Germanium: 32' onclick="enter_key('Ge')">Ge</button></td><td><button id='key' title='Arsenic: 33' onclick="enter_key('As')">As</button></td><td><button id='key' title='Selenium: 34' onclick="enter_key('Se')">Se</button></td><td><button id='key' title='Bromine: 35' onclick="enter_key('Br')">Br</button></td><td><button id='key' title='Krypton: 36' onclick="enter_key('Kr')">Kr</button></td></tr>
@@ -22,7 +29,7 @@
             <tr><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Lanthanum: 57' onclick="enter_key('La')">La</button></td><td><button id='key' title='Cerium: 58' onclick="enter_key('Ce')">Ce</button></td><td><button id='key' title='Praseodymium: 59' onclick="enter_key('Pr')">Pr</button></td><td><button id='key' title='Neodymium: 60' onclick="enter_key('Nd')">Nd</button></td><td><button id='key' title='Promethium: 61' onclick="enter_key('Pm')">Pm</button></td><td><button id='key' title='Samarium: 62' onclick="enter_key('Sm')">Sm</button></td><td><button id='key' title='Europium: 63' onclick="enter_key('Eu')">Eu</button></td><td><button id='key' title='Gadolinium: 64' onclick="enter_key('Gd')">Gd</button></td><td><button id='key' title='Terbium: 65' onclick="enter_key('Tb')">Tb</button></td><td><button id='key' title='Dysprosium: 66' onclick="enter_key('Dy')">Dy</button></td><td><button id='key' title='Holmium: 67' onclick="enter_key('Ho')">Ho</button></td><td><button id='key' title='Erbium: 68' onclick="enter_key('Er')">Er</button></td><td><button id='key' title='Thulium: 69' onclick="enter_key('Tm')">Tm</button></td><td><button id='key' title='Ytterbium: 70' onclick="enter_key('Yb')">Yb</button></td><td><button id='key' title='Lutetium: 71' onclick="enter_key('Lu')">Lu</button></td></tr>
             <tr><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Actinium: 89' onclick="enter_key('Ac')">Ac</button></td><td><button id='key' title='Thorium: 90' onclick="enter_key('Th')">Th</button></td><td><button id='key' title='Protactinium: 91' onclick="enter_key('Pa')">Pa</button></td><td><button id='key' title='Uranium: 92' onclick="enter_key('U')">U</button></td><td><button id='key' title='Neptunium: 93' onclick="enter_key('Np')">Np</button></td><td><button id='key' title='Plutonium: 94' onclick="enter_key('Pu')">Pu</button></td><td><button id='key' title='Americium: 95' onclick="enter_key('Am')">Am</button></td><td><button id='key' title='Curium: 96' onclick="enter_key('Cm')">Cm</button></td><td><button id='key' title='Berkelium: 97' onclick="enter_key('Bk')">Bk</button></td><td><button id='key' title='Californium: 98' onclick="enter_key('Cf')">Cf</button></td><td><button id='key' title='Einsteinium: 99' onclick="enter_key('Es')">Es</button></td><td><button id='key' title='Fermium: 100' onclick="enter_key('Fm')">Fm</button></td><td><button id='key' title='Mendelevium: 101' onclick="enter_key('Md')">Md</button></td><td><button id='key' title='Nobelium: 102' onclick="enter_key('No')">No</button></td><td><button id='key' title='Lawrencium: 103' onclick="enter_key('Lr')">Lr</button></td></tr>
         </table></div> <button type="submit" value="fill" 
-        onclick="calculate()" style="width: 150;">Balance equation >></button> [ <b id="res"></b> ]
+        onclick="calculate()" style="width: 150;">Balance equation >></button> | <span id="res"></span> 
     </form>
     
     <script>
@@ -53,9 +60,292 @@
             }
             return [eqtext, ""]
         }
+
+        function _parse_elem(res, fml, pfac = 1) {
+            let name = "", fac = "", i = 0;
+            if (fml && /[A-Z]/.test(fml[0])) {
+                i = 1;
+                if (i < fml.length && /[a-z]/.test(fml[i])) {
+                    i++;
+                }
+                name = fml.slice(0, i);
+                while (i < fml.length && /[0-9]/.test(fml[i])) {
+                    fac += fml[i];
+                    i++;
+                }
+            }
+            if (name) {
+                if (!fac) {
+                    fac = "1";
+                }
+                if (name in res) {
+                    res[name] += parseInt(fac) * pfac;
+                } else {
+                    res[name] = parseInt(fac) * pfac;
+                }
+            }
+            return [fml.slice(i), i > 0];
+        }
+
+        function _parse_term(fml) {
+            let cnt = 0, fac = "", term = "", rem = "";
+            if (fml && "{[(".includes(fml[0])) {
+                cnt++;
+                let i = 1;
+                while (i < fml.length && cnt > 0) {
+                    term += fml[i];
+                    if ("{[(".includes(fml[i])) {
+                        cnt++;
+                    }
+                    if (")]}}".includes(fml[i])) {
+                        cnt--;
+                    }
+                    i++;
+                }
+                term = term.slice(0, -1);
+                while (i < fml.length && /[0-9]/.test(fml[i])) {
+                    fac += fml[i];
+                    i++;
+                }
+                rem = fml.slice(i);
+                if (!fac) {
+                    fac = "1";
+                }
+            }
+            return [term, rem, fac ? parseInt(fac) : 0];
+        }
+
+        function _res_join(pref, res, fac) {
+            for (const [k, v] of Object.entries(res)) {
+                if (k in pref) {
+                    pref[k] += v * fac;
+                } else {
+                    pref[k] = v * fac;
+                }
+            }
+        }
+
+        function fml_clear(fml) {
+            cfml = "";
+            for (i = 0; i < fml.length; i++) {
+                if (/[a-zA-Z0-9]/.test(fml[i]) || "([{)]}+_".includes(fml[i])) {
+                    cfml += fml[i];
+                }
+            }
+            return cfml;
+        }
+
+        function fml_count(fml) {
+            let res = {}, rem = fml, pfac = 1;
+            while (rem) {
+                let [newRem, els] = _parse_elem(res, rem, pfac);
+                rem = newRem;
+                
+                if (!els) {
+                    let j = 0;
+                    while (rem[j] === "_") {
+                        j++;
+                    }
+                    for (let i = j; i < rem.length; i++) {
+                        if (!/[0-9]/.test(rem[i])) {
+                            pfac = parseInt(rem.slice(j, i));
+                            rem = rem.slice(i);
+                            break;
+                        }
+                    }
+                    if (pfac > 1) {
+                        continue;
+                    }
+                    let [term, newRem, fac] = _parse_term(rem);
+                    rem = newRem;
+                    _res_join(res, fml_count(term), fac);
+                }
+            }
+            return res;
+        }
+        function gcd(a, b) {
+            a = Math.abs(a);
+            b = Math.abs(b);
+            while (b) {
+                [a, b] = [b, a % b];
+            }
+            return a;
+        }
+
+        function frac_simplify(frac) {
+            const denom = gcd(frac[0], frac[1]);
+            return [frac[0] / denom, frac[1] / denom];
+        }
+
+        function _gaussian_elim(matrix) {
+            // matrix deep copy
+            let mat = matrix.map(row => [...row]);
+            const rows = mat.length;
+            const cols = mat[0].length;
+
+            // matrix to fraction
+            let fractions = mat.map(row => 
+                row.map(val => [val, 1])
+            );
+            
+            // Forward elimination
+            for (let pivot = 0; pivot < Math.min(rows, cols - 1); pivot++) {
+                // Find pivot row (first non-zero entry in column)
+                let rmax = pivot;
+                for (let i = pivot + 1; i < rows; i++) {
+                    if (Math.abs(fractions[i][pivot][0]) > Math.abs(fractions[rmax][pivot][0])) {
+                        rmax = i;
+                    }
+                }
+                
+                // continue next column if no non-zero entry
+                if (fractions[rmax][pivot][0] === 0) 
+                    continue;
+                
+                // Swap row with pivot
+                if (rmax !== pivot) {
+                    [fractions[pivot], fractions[rmax]] = [fractions[rmax], fractions[pivot]];
+                }
+                
+                // Make pivot element 1
+                let piv_val = fractions[pivot][pivot];
+                for (let j = pivot; j < cols; j++) {
+                    fractions[pivot][j] = frac_simplify([
+                        fractions[pivot][j][0] * piv_val[1],
+                        fractions[pivot][j][1] * piv_val[0]
+                    ]);
+                }
+                
+                // Eliminate column entries below pivot
+                for (let i = pivot + 1; i < rows; i++) {
+                    let factor = fractions[i][pivot];
+                    if (factor[0] === 0) continue;
+                    
+                    for (let j = pivot; j < cols; j++) {
+                        let subtract = [
+                            factor[0] * fractions[pivot][j][0] * fractions[i][j][1],
+                            factor[1] * fractions[pivot][j][1] * fractions[i][j][0]
+                        ];
+                        fractions[i][j] = frac_simplify([
+                            fractions[i][j][0] * factor[1] * fractions[pivot][j][1] - 
+                            factor[0] * fractions[pivot][j][0] * fractions[i][j][1],
+                            fractions[i][j][1] * factor[1] * fractions[pivot][j][1]
+                        ]);
+                    }
+                }
+            }
+            
+            // Back substitution
+            for (let pivot = rows - 1; pivot > 0; pivot--) {
+                // Find pivot column
+                let piv_col = -1;
+                for (let j = 0; j < cols - 1; j++) {
+                    if (fractions[pivot][j][0] !== 0) {
+                        piv_col = j;
+                        break;
+                    }
+                }
+                if (piv_col === -1) continue;
+                
+                // Eliminate entries above pivot
+                for (let i = pivot - 1; i >= 0; i--) {
+                    let factor = fractions[i][piv_col];
+                    if (factor[0] === 0) continue;
+                    
+                    for (let j = piv_col; j < cols; j++) {
+                        fractions[i][j] = frac_simplify([
+                            fractions[i][j][0] * factor[1] * fractions[pivot][j][1] - 
+                            factor[0] * fractions[pivot][j][0] * fractions[i][j][1],
+                            fractions[i][j][1] * factor[1] * fractions[pivot][j][1]
+                        ]);
+                    }
+                }
+            }
+            return fractions
+        }
+
+        function _normalize_solutions(fractions) {
+            let sol = fractions.map((row, i) => [row[row.length-2].map(n => Math.abs(n)), row[i].map(n => Math.abs(n)), "_"]);
+            sol = sol.slice(0, -1);
+            for (let i = 0; i < sol.length; i++) {
+                const fac = sol[i][1];
+                if (fac[0] !== 0) {  // Avoid division by zero
+                    // Multiply the row by reciprocal of the factor to make target element 1
+                    sol[i][0][0] *= fac[1];
+                    sol[i][0][1] *= fac[0];
+                    sol[i][0] = frac_simplify(sol[i][0])
+                }
+            }
+            function lcm(numbers) {
+                return numbers.reduce((acc, cur) => (acc * cur) / gcd(acc, cur), numbers[0]);
+            }
+            const cdenom = lcm(sol.map(row => row[0][1]));
+            return [...sol.map(row => row[0][0] * cdenom / row[0][1]), cdenom]
+        }
+
+        function eq_gaussian(lreq) {
+            const eq_input = lreq.map(side => fml_clear(side).split("+"));
+            const compounds = lreq.map(side => fml_clear(side).split("+").map((fml,j) => fml_count(fml)));
+            let elems = compounds.map((side,i) => {
+                let _all_elem = new Set();
+                side.map((fcnt, i) => Object.keys(fcnt).forEach(k => {_all_elem.add(k)}))
+                let _elems = {};
+                return Array.from(_all_elem).sort();
+            })
+            if (elems[0].length != elems[1].length) {
+                alert("Not equal number of elements: left="+elems[0].length+", right="+elems[1].length);
+                return false;
+            }
+            for (i = 0; i < elems[0].length; i++) {
+                if (elems[0][i] != elems[1][i]) {
+                    alert("Not matching elements on both sides: "+elems[0]+"/"+elems[1]+" (left: "+elems[0][i]+", right:"+elems[1][i]+")");
+                    return false;
+                }
+            }
+            elems = elems[0];
+            const dim = compounds[0].length+compounds[1].length;
+            if (dim < elems.length) {
+                alert("Too many elements and not enough reactant/products. Cannot find a solution")
+                return false;
+            }
+            let matrix = Array.from({ length: dim }, () => new Array(dim+1).fill(0));
+            for (k = 0; k < elems.length; k++) {
+                const e = elems[k];
+                for (i = 0; i < compounds[0].length; i++) {
+                    if (e in compounds[0][i])
+                        matrix[k][i] = compounds[0][i][e];
+                    else
+                        matrix[k][i] = 0;
+                } 
+                for (i = 0; i < compounds[1].length; i++) {
+                    let j = compounds[0].length + i;
+                    if (e in compounds[1][i])
+                        matrix[k][j] = -compounds[1][i][e];
+                    else
+                        matrix[k][j] = 0;
+                }
+            }
+            let sol = _gaussian_elim(matrix);
+            sol = _normalize_solutions(sol);
+            let res_html = "";
+            for (i = 0; i < compounds[0].length; i++) {
+                if (sol[i] != 1)
+                    res_html += "<b style='color: blue'>"+sol[i]+"</b>"
+                res_html += eq_input[0][i]+" + ";
+            }
+            res_html = res_html.slice(0,-3) + " == ";
+            for (i = 0; i < compounds[1].length; i++) {
+                if (sol[compounds[0].length+i] != 1)
+                    res_html += "<b style='color: blue'>"+sol[compounds[0].length+i]+"</b>"
+                res_html += eq_input[1][i]+" + ";
+            }
+            return res_html.slice(0,-3)
+        }
+    
         function calculate() {
             try {
-                document.getElementById("res").innerHTML = eq_separate(document.getElementById("equation").value);
+                const res = eq_gaussian(eq_separate(document.getElementById("equation").value));
+                document.getElementById("res").innerHTML = res;
             } catch(err) {
                 alert("Debugger[ "+err+" ]");
             }
