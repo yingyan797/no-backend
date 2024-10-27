@@ -148,9 +148,7 @@
                 return "Northwest";
         }
 
-        function date_difference(date1, date2) {
-            return Math.floor(date1 - date2) / 86400000;
-        } function time_convert(secs) {
+        function time_convert(secs) {
             const h = parseInt(secs / 3600);
             const m = parseInt((secs - 3600*h) / 60);
             const s = secs - 3600*h - 60*m;
