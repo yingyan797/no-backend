@@ -43,7 +43,7 @@
         }
 
         table {
-            width: 80%;
+            width: 70%;
             margin-bottom: 1rem;
             border-collapse: collapse;
         }
@@ -102,7 +102,7 @@
     </style>
 </head>
 <body>
-    <h2 style="background-color: skyblue; width: 100%;"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Astronomy Sun calculator and Visualization</h2>
+    <h2 style="background-color: skyblue"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Astronomy Sun calculator and 3D Visuals</h2>
     <form action="javascript: ;"  onsubmit="process_form(this)"><br>
         <i style="font-size: larger; background-color: lightgoldenrodyellow;">[ Sun calculator ] -- Select one or more of the functions to begin -- </i>
         <p class="section-title">1. Sunrise/Sunset time and direction, Day length <input type="checkbox" oninput="hide_show('func_1')"></p>
@@ -141,12 +141,13 @@
         <div style="display: none;" id="func_a1"><table>
             <tr><td>Locations</td><th>Longitude</th><th>Latitude</th></tr>
             <tr><th>1</th><td><input type="number" id="lon_a1_1" min="-180" max="180" step="0.01" value="120"></td>
-                <td><input type="number" id="lat_a1_1" min="-90" max="90" step="0.01" value="35"></td>
-                <th>Earth radius (km)</th><td><input type="number" id="radius_a1" value="6371"></td></tr>
+                <td><input type="number" id="lat_a1_1" min="-90" max="90" step="0.01" value="35"></td></tr>
             <tr><th>2</th><td><input type="number" id="lon_a1_2" min="-180" max="180" step="0.01" value="25"></td> 
-                <td><input type="number" id="lat_a1_2" min="-90" max="90" step="0.01" value="45"></td>
-                <td>Distance: <button type="submit" value="calc_a1">Calculate >></button></td><td id="res_a1"></td></tr>
-        </table></div>
+                <td><input type="number" id="lat_a1_2" min="-90" max="90" step="0.01" value="45"></td></tr>
+        </table>Earth radius (km): <input type="number" id="radius_a1" value="6371" min="0" max="9e10"><br>
+        Distance: <button type="submit" value="calc_a1">Calculate >></button><textarea id="res_a1"></textarea>
+
+    </div>
     </form><canvas></canvas>
     <script>
         function deg_to_rad(deg) {
