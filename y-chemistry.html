@@ -39,15 +39,11 @@
             button {
                 width: auto;
             }
-            
-            .header h2 {
-                font-size: 1.5rem;
-            }
         }
     </style>
  </head>
 <body>
-    <h2 style="background-color: lightgreen;"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Chemistry: equation balancing</h2>
+    <h2 style="background-color: lightgreen; width: 100%;"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Chemistry: equation balancing</h2>
     <form action="javascript: ;">
         <b style="font-size: large; padding: 10px;">Input Equation</b> 
         <i style="color: gray; font-size: small;"> -- Both direct typing and virtual keyboard inputs are supported. Note: Virtual keyboard ALWAYS adds text to the back regardless of cursor position --</i>
@@ -63,7 +59,7 @@
             <tr><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Lanthanum: 57' onclick="enter_key('La')">La</button></td><td><button id='key' title='Cerium: 58' onclick="enter_key('Ce')">Ce</button></td><td><button id='key' title='Praseodymium: 59' onclick="enter_key('Pr')">Pr</button></td><td><button id='key' title='Neodymium: 60' onclick="enter_key('Nd')">Nd</button></td><td><button id='key' title='Promethium: 61' onclick="enter_key('Pm')">Pm</button></td><td><button id='key' title='Samarium: 62' onclick="enter_key('Sm')">Sm</button></td><td><button id='key' title='Europium: 63' onclick="enter_key('Eu')">Eu</button></td><td><button id='key' title='Gadolinium: 64' onclick="enter_key('Gd')">Gd</button></td><td><button id='key' title='Terbium: 65' onclick="enter_key('Tb')">Tb</button></td><td><button id='key' title='Dysprosium: 66' onclick="enter_key('Dy')">Dy</button></td><td><button id='key' title='Holmium: 67' onclick="enter_key('Ho')">Ho</button></td><td><button id='key' title='Erbium: 68' onclick="enter_key('Er')">Er</button></td><td><button id='key' title='Thulium: 69' onclick="enter_key('Tm')">Tm</button></td><td><button id='key' title='Ytterbium: 70' onclick="enter_key('Yb')">Yb</button></td><td><button id='key' title='Lutetium: 71' onclick="enter_key('Lu')">Lu</button></td></tr>
             <tr><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Actinium: 89' onclick="enter_key('Ac')">Ac</button></td><td><button id='key' title='Thorium: 90' onclick="enter_key('Th')">Th</button></td><td><button id='key' title='Protactinium: 91' onclick="enter_key('Pa')">Pa</button></td><td><button id='key' title='Uranium: 92' onclick="enter_key('U')">U</button></td><td><button id='key' title='Neptunium: 93' onclick="enter_key('Np')">Np</button></td><td><button id='key' title='Plutonium: 94' onclick="enter_key('Pu')">Pu</button></td><td><button id='key' title='Americium: 95' onclick="enter_key('Am')">Am</button></td><td><button id='key' title='Curium: 96' onclick="enter_key('Cm')">Cm</button></td><td><button id='key' title='Berkelium: 97' onclick="enter_key('Bk')">Bk</button></td><td><button id='key' title='Californium: 98' onclick="enter_key('Cf')">Cf</button></td><td><button id='key' title='Einsteinium: 99' onclick="enter_key('Es')">Es</button></td><td><button id='key' title='Fermium: 100' onclick="enter_key('Fm')">Fm</button></td><td><button id='key' title='Mendelevium: 101' onclick="enter_key('Md')">Md</button></td><td><button id='key' title='Nobelium: 102' onclick="enter_key('No')">No</button></td><td><button id='key' title='Lawrencium: 103' onclick="enter_key('Lr')">Lr</button></td></tr>
         </table></div> <button type="submit" value="fill" 
-        onclick="calculate()" style="background-color: lightgreen; height: 10%;">Balance equation >></button><span id="res"></span>
+        onclick="calculate()" style="background-color: lightgreen; height: 10%;">Balance equation >></button><span id="res" style="width: 100%;"></span>
         <i id="explain" style="display: none; padding: 10px; color: gray;">
             Solution explained: system of linear equations
         <table id="expl_tab" style="border: dashed; background-color: lightcyan; padding: 10px"></table></i>
