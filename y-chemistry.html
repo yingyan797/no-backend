@@ -13,12 +13,17 @@
             padding-bottom: 5px;
             padding-left: 10px;
         }
+        th, td {
+            border: solid;
+        }
     </style>
  </head>
 <body>
-    <h3 style="background-color: #6495ed;">Chemistry equation balancing</h3>
+    <h2 style="background-color: lightgreen;"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Chemistry: equation balancing</h2>
     <form action="javascript: ;">
-        Equation: <input type="text" id="equation" value="H2O -> H2 + O2" style="width: 70%; font-size: large; color: cornflowerblue;"></button><br>
+        Equation: <input type="text" id="equation" value="K4[Fe(SCN)6] + K2Cr2O7 + H2SO4 -> Fe2(SO4)3 + Cr2(SO4)3 + CO2 + H2O + K2SO4 + KNO3"
+            style="width: 70%; font-size: large; color: cornflowerblue;"></button><br>
+        <i style="color: gray; font-size: small;"> -- Both direct typing and virtual keyboard inputs are supported. Note: Virtual keyboard ALWAYS adds text to the back regardless of cursor position --</i>
         <div style="padding-left: 75px; padding-top: 10px; padding-bottom: 10px;"><table style='border: dashed; background-color: lightcyan;'>
             <tr><td><button id='key' title='Hydrogen: 1' onclick="enter_key('H')">H</button></td><td><button id='key' title=': ' onclick="enter_key('0')">0</button></td><td><button id='key' title=': ' onclick="enter_key('1')">1</button></td><td><button id='key' title=': ' onclick="enter_key('2')">2</button></td><td><button id='key' title=': ' onclick="enter_key('3')">3</button></td><td><button id='key' title=': ' onclick="enter_key('4')">4</button></td><td><button id='key' title=': ' onclick="enter_key('5')">5</button></td><td><button id='key' title=': ' onclick="enter_key('6')">6</button></td><td><button id='key' title=': ' onclick="enter_key('7')">7</button></td><td><button id='key' title=': ' onclick="enter_key('8')">8</button></td><td><button id='key' title=': ' onclick="enter_key('9')">9</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('(')">(</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key(')')">)</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('+')">+</button></td><td><button id='key' style="background-color: skyblue; font-size: large;" onclick="enter_key('->')">-></button><td><button id='key' title='Delete one character' onclick="enter_key('Del')" style="background-color: lightgoldenrodyellow">Del</button></td><td><button id='key' title='Clear input' style="background-color: lightsalmon;" onclick="enter_key('AC')">AC</button></td><td><button id='key' title='Helium: 2' onclick="enter_key('He')">He</button></td></tr>
             <tr><td><button id='key' title='Lithium: 3' onclick="enter_key('Li')">Li</button></td><td><button id='key' title='Beryllium: 4' onclick="enter_key('Be')">Be</button></td><td><button disabled></button></td><td><button id='key' title=': ' onclick="enter_key('OH')">OH</button></td><td><button id='key' title=': ' onclick="enter_key('CO3')">CO3</button></td><td><button id='key' title=': ' onclick="enter_key('NO3')">NO3</button></td><td><button id='key' title=': ' onclick="enter_key('SO4')">SO4</button></td><td><button id='key' title=': ' onclick="enter_key('CH')">CH</button></td><td><button id='key' title=': ' onclick="enter_key('O2')">O2</button></td><td><button id='key' title=': ' onclick="enter_key('H2O')">H2O</button></td><td><button id='key' title=': ' onclick="enter_key('CO2')">CO2</button></td><td><button id='key' title="To be used in combining 2 compounds (like CuSO4_5H2O)" style="background-color: skyblue; font-size: large;" onclick="enter_key('_')">_</button></td><td><button id='key' title='Boron: 5' onclick="enter_key('B')">B</button></td><td><button id='key' title='Carbon: 6' onclick="enter_key('C')">C</button></td><td><button id='key' title='Nitrogen: 7' onclick="enter_key('N')">N</button></td><td><button id='key' title='Oxygen: 8' onclick="enter_key('O')">O</button></td><td><button id='key' title='Fluorine: 9' onclick="enter_key('F')">F</button></td><td><button id='key' title='Neon: 10' onclick="enter_key('Ne')">Ne</button></td></tr>
@@ -30,7 +35,10 @@
             <tr><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Lanthanum: 57' onclick="enter_key('La')">La</button></td><td><button id='key' title='Cerium: 58' onclick="enter_key('Ce')">Ce</button></td><td><button id='key' title='Praseodymium: 59' onclick="enter_key('Pr')">Pr</button></td><td><button id='key' title='Neodymium: 60' onclick="enter_key('Nd')">Nd</button></td><td><button id='key' title='Promethium: 61' onclick="enter_key('Pm')">Pm</button></td><td><button id='key' title='Samarium: 62' onclick="enter_key('Sm')">Sm</button></td><td><button id='key' title='Europium: 63' onclick="enter_key('Eu')">Eu</button></td><td><button id='key' title='Gadolinium: 64' onclick="enter_key('Gd')">Gd</button></td><td><button id='key' title='Terbium: 65' onclick="enter_key('Tb')">Tb</button></td><td><button id='key' title='Dysprosium: 66' onclick="enter_key('Dy')">Dy</button></td><td><button id='key' title='Holmium: 67' onclick="enter_key('Ho')">Ho</button></td><td><button id='key' title='Erbium: 68' onclick="enter_key('Er')">Er</button></td><td><button id='key' title='Thulium: 69' onclick="enter_key('Tm')">Tm</button></td><td><button id='key' title='Ytterbium: 70' onclick="enter_key('Yb')">Yb</button></td><td><button id='key' title='Lutetium: 71' onclick="enter_key('Lu')">Lu</button></td></tr>
             <tr><td><button disabled></button></td><td><button disabled></button></td><td><button disabled></button></td><td><button id='key' title='Actinium: 89' onclick="enter_key('Ac')">Ac</button></td><td><button id='key' title='Thorium: 90' onclick="enter_key('Th')">Th</button></td><td><button id='key' title='Protactinium: 91' onclick="enter_key('Pa')">Pa</button></td><td><button id='key' title='Uranium: 92' onclick="enter_key('U')">U</button></td><td><button id='key' title='Neptunium: 93' onclick="enter_key('Np')">Np</button></td><td><button id='key' title='Plutonium: 94' onclick="enter_key('Pu')">Pu</button></td><td><button id='key' title='Americium: 95' onclick="enter_key('Am')">Am</button></td><td><button id='key' title='Curium: 96' onclick="enter_key('Cm')">Cm</button></td><td><button id='key' title='Berkelium: 97' onclick="enter_key('Bk')">Bk</button></td><td><button id='key' title='Californium: 98' onclick="enter_key('Cf')">Cf</button></td><td><button id='key' title='Einsteinium: 99' onclick="enter_key('Es')">Es</button></td><td><button id='key' title='Fermium: 100' onclick="enter_key('Fm')">Fm</button></td><td><button id='key' title='Mendelevium: 101' onclick="enter_key('Md')">Md</button></td><td><button id='key' title='Nobelium: 102' onclick="enter_key('No')">No</button></td><td><button id='key' title='Lawrencium: 103' onclick="enter_key('Lr')">Lr</button></td></tr>
         </table></div> <button type="submit" value="fill" 
-        onclick="calculate()" style="width: 150;">Balance equation >></button><span id="res"></span> 
+        onclick="calculate()" style="width: 150; font-weight: 700; background-color: lightgreen;">Balance equation >></button><span id="res"></span>
+        <i id="explain" style="display: none; padding: 10px; color: gray;">
+            Solution explained: system of linear equations
+        <table id="expl_tab" style="border: dashed; background-color: lightcyan; padding: 10px"></table></i>
     </form>
     
     <script>
@@ -326,6 +334,19 @@
                         matrix[k][j] = 0;
                 }
             }
+            let explain = "";
+            for (i = 0; i < elems.length+1; i++) {
+                if (i == 0) {
+                    explain += "<tr><td>elements</td>";
+                    eq_input[0].concat(eq_input[1]).map(c => explain += "<th style='color: blue'>"+c+"</th>")
+                    explain += "<td>sum</td>"
+                } else {
+                    explain += "<tr><th style='color: blue'>"+elems[i-1]+"</th>";
+                    matrix[i-1].map(num => explain += "<td>"+num+"</td>" )
+                }
+                explain += "</tr>";
+            }
+            document.getElementById("expl_tab").innerHTML = explain;
             let sol = _gaussian_elim(matrix);
             sol = _normalize_solutions(sol);
             let res_html = "";
@@ -359,6 +380,7 @@
             try {
                 const res = eq_gaussian(eq_separate(document.getElementById("equation").value));
                 document.getElementById("res").innerHTML = res;
+                document.getElementById("explain").style.display = "block";
             } catch(err) {
                 alert("Debugger[ "+err+" ]");
             }
