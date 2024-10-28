@@ -49,6 +49,7 @@
         }
 
         th,td {
+            background-color: azure;
             border: 1px solid cornflowerblue;
             padding: 0.5rem;
             font-size: 0.9rem;
@@ -63,7 +64,8 @@
             border-radius: 4px;
         }
 
-        input[type="checkbox"] {
+        input[type="checkbox"],
+        input[type="radio"] {
             width: 1.2rem;
             height: 1.2rem;
             vertical-align: middle;
@@ -74,7 +76,6 @@
             border: none;
             padding: 0.5rem 1rem;
             border-radius: 4px;
-            color: white;
             cursor: pointer;
             width: 100%;
             margin-top: 0.5rem;
@@ -83,7 +84,8 @@
         textarea {
             width: 100%;
             font-size: large;
-            background-color: lightcyan;
+            background-color: lightgray;
+            color: blue;
             padding: 0.5rem;
             border-radius: 4px;
         }
@@ -121,8 +123,8 @@
                     <th>Day length</th><th style="color: black;">Sun trajectory of the day </th></tr>
                 <tr style="color: black;"><td id="_1_sr"></td><td id="_1_rd"></td><td id="_1_ss"></td><td id="_1_sd"></td><td id="_1_dl"></td>
                     <td><input type="submit" id="plot_1" value="Draw trajectory >>"></td></tr>
-            </table>
-        </div> <p class="section-title">2. Sun height and direction at any time of the day <input type="checkbox" oninput="hide_show('func_2')"></p>
+            </table></div> 
+        <p class="section-title">2. Sun height and direction at any time of the day <input type="checkbox" oninput="hide_show('func_2')"></p>
         <div style="display: none;" id="func_2">
             <table><tr>
                 <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th><th>Time</th>
@@ -134,11 +136,43 @@
                 <td><input type="time" id="time_2" value="17:05"></td>
                 <td><button type="submit" value="calc_2">Calculate</button></td>
             </tr></table> <div id="res_2" style="display: none; color: cornflowerblue;">
-                Sun height <br> <textarea id="_2_sh" rows="1" style="width: 80%;"></textarea> <br> Sun direction <br> <textarea id="_2_sd" rows="1" style="width: 80%;"></textarea> <br>
+                Sun height <br> <textarea readonly id="_2_sh" rows="1" style="width: 80%;"></textarea> <br> Sun direction <br> <textarea readonly id="_2_sd" rows="1" style="width: 80%;"></textarea> <br>
                 Sun trajectory of the day: <button type="submit" id="plot_2" value="draw">Draw >></button>
-        </div></div> <p class="section-title">3. Time(s) of the day when Sun reaches a certain height/direction</p>
-        <p class="section-title">4. Date of the year when Sun appears in a certain position at a given time </p>
-        <i style="background-color: lightgoldenrodyellow;">Other calculators</i><br>
+        </div></div> 
+        <p class="section-title">3. Time(s) of the day when Sun reaches a certain height/direction <input type="checkbox" oninput="hide_show('func_3')"></p>
+        <div style="display: none;" id="func_3">
+            <table style="width: 85%;"><tr>
+                <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th>
+                <th><input type="radio" name="angmode_3" oninput="input_ang('ht',3)"><label for="angmode_3" id="ht_lab_3">Sun height</label>; 
+                    <input type="radio" name="angmode_3" oninput="input_ang('drn',3)"><label for="angmode_3" id="drn_lab_3">Direction</label></th>
+            </tr><tr">
+                <td><input type="number" id="lon_3" min="-180" max="180" step="0.01" value="120"></td> 
+                <td><input type="number" id="lat_3" min="-90" max="90" step="0.01" value="35"></td> 
+                <td><input type="number" id="tz_3" min="-12" max="12" value="8"></td> 
+                <td><input type="date" id="date_3" value="2024-03-21"></td>
+                <td><input type="number" id="ang_3" value="30" min="-90" max="360" style="width: auto;"> (degree)</td>
+                <td><button type="submit" id="calc_3" value="calc_3" disabled>Calculate</button></td>
+            </tr></table></div>
+        <p class="section-title">4. Date of the year when Sun appears in a certain position at a given time <input type="checkbox" oninput="hide_show('func_4')"></p>
+        <div style="display: none;" id="func_4">
+            <table style="width: 85%;"><tr>
+                <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Time</th>
+                <th><input type="radio" name="angmode_4" oninput="input_ang('ht',4)"><label for="angmode_4" id="ht_lab_4">Sun height</label>; 
+                    <input type="radio" name="angmode_4" oninput="input_ang('drn',4)"><label for="angmode_4" id="drn_lab_4">Direction</label></th>
+            </tr><tr">
+                <td><input type="number" id="lon_4" min="-180" max="180" step="0.01" value="120"></td> 
+                <td><input type="number" id="lat_4" min="-90" max="90" step="0.01" value="35"></td> 
+                <td><input type="number" id="tz_4" min="-12" max="12" value="8"></td> 
+                <td><input type="time" id="time_4" value="17:05"></td>
+                <td><input type="number" id="ang_4" value="30" min="-90" max="360" step="0.01" style="width: auto"> (degree)</td>
+            </tr></table> <i style="color: gray; font-size: 15;">Optional condition: narrow down the date range (for Daylight daving time, etc.) 
+            <input type="checkbox" onclick="hide_show('opt_4')"></i> <span id="opt_4" style="display: none;"> 
+            <b>Date from:</b> <input type="dfrom_4" value="2024-04-01" width="auto">;
+            <b>Date to: </b><input type="dfrom_4" value="2024-10-15" width="auto"> <i style="font-size: small;">(make sure GMT time zone is the same over this period)</i></span> 
+            <button type="submit" id="calc_4" value="calc_4" style="width: auto;">Calculate >></button>
+        
+        </div>
+        <br><i style="background-color: lightgoldenrodyellow;">Other calculators</i><br>
         <p class="section-title">1. The distance between any two locations on Earth <input type="checkbox" oninput="hide_show('func_a1')"></p>
         <div style="display: none;" id="func_a1"><table>
             <tr><td>Locations</td><th>Longitude</th><th>Latitude</th></tr>
@@ -147,11 +181,11 @@
             <tr><th>2</th><td><input type="number" id="lon_a1_2" min="-180" max="180" step="0.01" value="25"></td> 
                 <td><input type="number" id="lat_a1_2" min="-90" max="90" step="0.01" value="45"></td></tr>
         </table>Earth radius (km): <input type="number" id="radius_a1" value="6371" min="0" max="9e10"><br>
-        Distance: <button type="submit" value="calc_a1">Calculate >></button><textarea id="res_a1"></textarea>
+        Distance: <button type="submit" value="calc_a1" style="width: auto;">Calculate >></button><textarea readonly id="res_a1"></textarea>
         </div><p class="section-title">2. The distance to an object in the sky observed at a certain angle <input type="checkbox" oninput="hide_show('func_a2')"></p>
-        <p class="section-title">2. Maximum observable distance to horizon standing at a given altitude<input type="checkbox" oninput="hide_show('func_a2')"></p>
+        <p class="section-title">3. Maximum observable distance to horizon standing at a given altitude<input type="checkbox" oninput="hide_show('func_a2')"></p>
     </div><div id="visual3d" style="display: none;"> <h3 style="color: cornflowerblue;">3D Graphical display of the related phenomenon</h3>
-            <textarea id="vis_desc"></textarea><br><canvas></canvas></div> 
+            <textarea readonly id="vis_desc"></textarea><br><canvas></canvas></div> 
     </form>
     <script>
         function deg_to_rad(deg) {
@@ -274,6 +308,27 @@
             } else {
                 document.getElementById("mode").innerText = "3D Visualization page >>";
             }
+        } function input_ang(aname, num) {
+            const field = "ang"+"_"+num; 
+            document.getElementById("calc_"+num).disabled = false;
+            switch (aname) {
+                case "ht":
+                    document.getElementById(field).min = -90;
+                    document.getElementById(field).max = 90;
+                    document.getElementById("ht_lab_"+num).style.color = "blueviolet";
+                    document.getElementById("ht_lab_"+num).style.fontSize = "large";
+                    document.getElementById("drn_lab_"+num).style.color = "gray";
+                    document.getElementById("drn_lab_"+num).style.fontSize = "small";
+                    break;
+                case "drn":
+                    document.getElementById(field).min = 0;
+                    document.getElementById(field).max = 360;
+                    document.getElementById("ht_lab_"+num).style.color = "gray";
+                    document.getElementById("ht_lab_"+num).style.fontSize = "small";
+                    document.getElementById("drn_lab_"+num).style.color = "blueviolet";
+                    document.getElementById("drn_lab_"+num).style.fontSize = "large";
+                    break;
+            }
         }
 
         function sunrise_set() {
@@ -308,8 +363,8 @@
             document.getElementById("res_2").style.display = "block";
             const ht = Math.round(100*rad_to_deg(res[1]))/100;
             const drn = Math.round(100*rad_to_deg(res[0]))/100;
-            document.getElementById("_2_sh").innerText = ht + " degree";
-            document.getElementById("_2_sd").innerText = drn +" - "+ direction_class(drn);
+            document.getElementById("_2_sh").value = ht + " degree";
+            document.getElementById("_2_sd").value = drn +" - "+ direction_class(drn);
         }
 
         function sphere_distance() {
@@ -323,7 +378,7 @@
             const run2 =ra*ra + rb*rb - 2*ra*rb*Math.cos(lon1 - lon2);
             const ang = 2*Math.asin(Math.sqrt(rise2+run2)/2);
             const d = document.getElementById("radius_a1").value*ang
-            document.getElementById("res_a1").innerHTML = Math.round(100*d)/100 + " km";
+            document.getElementById("res_a1").value = Math.round(100*d)/100 + " km";
         }
 
         function process_form(fm) {
