@@ -102,9 +102,10 @@
     </style>
 </head>
 <body>
-    <h2 style="background-color: skyblue"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Astronomy Sun calculator and 3D Visuals</h2>
-    <form action="javascript: ;"  onsubmit="process_form(this)"><br>
-        <i style="font-size: larger; background-color: lightgoldenrodyellow;">[ Sun calculator ] -- Select one or more of the functions to begin -- </i>
+    <h2 style="background-color: skyblue"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Astronomy Sun calculator & graphics| 
+        <button style="width: auto; font-size: large; color: blueviolet;" onclick="vis_switch()"><b id="mode">3D Visualization page >></b></button></h2>
+    <form action="javascript: ;"  onsubmit="process_form(this)"><br><div id="calculator" style="display: block;">
+        <i style="font-size: larger; background-color: lightgoldenrodyellow;">[ Sun calculator ] -- Select one or more of the functions -- </i>
         <p class="section-title">1. Sunrise/Sunset time and direction, Day length <input type="checkbox" oninput="hide_show('func_1')"></p>
         <div style="display: none;" id="func_1">
             <table><tr>
@@ -136,6 +137,7 @@
                 Sun height <br> <textarea id="_2_sh" rows="1" style="width: 80%;"></textarea> <br> Sun direction <br> <textarea id="_2_sd" rows="1" style="width: 80%;"></textarea> <br>
                 Sun trajectory of the day: <button type="submit" id="plot_2" value="draw">Draw >></button>
         </div></div> <p class="section-title">3. Time(s) of the day when Sun reaches a certain height/direction</p>
+        <p class="section-title">4. Date of the year when Sun appears in a certain position at a given time </p>
         <i style="background-color: lightgoldenrodyellow;">Other calculators</i><br>
         <p class="section-title">1. The distance between any two locations on Earth <input type="checkbox" oninput="hide_show('func_a1')"></p>
         <div style="display: none;" id="func_a1"><table>
@@ -146,9 +148,11 @@
                 <td><input type="number" id="lat_a1_2" min="-90" max="90" step="0.01" value="45"></td></tr>
         </table>Earth radius (km): <input type="number" id="radius_a1" value="6371" min="0" max="9e10"><br>
         Distance: <button type="submit" value="calc_a1">Calculate >></button><textarea id="res_a1"></textarea>
-
-    </div>
-    </form><canvas></canvas>
+        </div><p class="section-title">2. The distance to an object in the sky observed at a certain angle <input type="checkbox" oninput="hide_show('func_a2')"></p>
+        <p class="section-title">2. Maximum observable distance to horizon standing at a given altitude<input type="checkbox" oninput="hide_show('func_a2')"></p>
+    </div><div id="visual3d" style="display: none;"> <h3 style="color: cornflowerblue;">3D Graphical display of the related phenomenon</h3>
+            <textarea id="vis_desc"></textarea><br><canvas></canvas></div> 
+    </form>
     <script>
         function deg_to_rad(deg) {
             return deg / 180 * Math.PI;
@@ -261,6 +265,14 @@
                 document.getElementById(sec_id).style.display = "block";
             } else {
                 document.getElementById(sec_id).style.display = "none";
+            }
+        } function vis_switch() {
+            hide_show("calculator");
+            hide_show("visual3d");
+            if (document.getElementById("mode").innerText === "3D Visualization page >>") {
+                document.getElementById("mode").innerText = "<< Back to sun calculator";
+            } else {
+                document.getElementById("mode").innerText = "3D Visualization page >>";
             }
         }
 
