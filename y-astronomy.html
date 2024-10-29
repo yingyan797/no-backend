@@ -108,7 +108,7 @@
         <button style="width: auto; font-size: large; color: blueviolet;" onclick="vis_switch()"><b id="mode">3D Visualization page >></b></button></h2>
     <form action="javascript: ;"  onsubmit="process_form(this)"><br><div id="calculator" style="display: block;">
         <i style="font-size: larger; background-color: lightgoldenrodyellow;">[ Sun calculator ] -- Select one or more of the functions -- </i>
-        <p class="section-title">1. Sunrise/Sunset time and direction, Day length <input type="checkbox" oninput="hide_show('func_1')"></p>
+        <p class="section-title">1. Sunrise/Sunset time and direction, Daylight hours <input type="checkbox" oninput="hide_show('func_1')"></p>
         <div style="display: none;" id="func_1">
             <table><tr>
                 <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th>
@@ -120,7 +120,7 @@
             </tr></table> -- Results -- 
             <table style="display: none;" id="res_1">
                 <tr><th>Sunrise</th><th>Direction</th><th>Sunset</th><th>Direction</th>
-                    <th>Day length</th><th style="color: black;">Sun trajectory of the day </th></tr>
+                    <th>Daylight</th><th style="color: black;">Sun trajectory of the day </th></tr>
                 <tr style="color: black;"><td id="_1_sr"></td><td id="_1_rd"></td><td id="_1_ss"></td><td id="_1_sd"></td><td id="_1_dl"></td>
                     <td><input type="submit" id="plot_1" value="Draw trajectory >>"></td></tr>
             </table></div> 
@@ -144,15 +144,16 @@
             <table style="width: 85%;"><tr>
                 <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th>
                 <th><input type="radio" name="angmode_3" oninput="input_ang('ht',3)"><label for="angmode_3" id="ht_lab_3">Sun height</label>; 
-                    <input type="radio" name="angmode_3" oninput="input_ang('drn',3)"><label for="angmode_3" id="drn_lab_3">Direction</label></th>
+                    <input type="radio" name="angmode_3"oninput="input_ang('drn',3)"><label for="angmode_3" id="drn_lab_3">Direction</label></th>
             </tr><tr">
                 <td><input type="number" id="lon_3" min="-180" max="180" step="0.01" value="120"></td> 
                 <td><input type="number" id="lat_3" min="-90" max="90" step="0.01" value="35"></td> 
                 <td><input type="number" id="tz_3" min="-12" max="12" value="8"></td> 
                 <td><input type="date" id="date_3" value="2024-03-21"></td>
-                <td><input type="number" id="ang_3" value="30" min="-90" max="360" style="width: auto;"> (degree)</td>
+                <td><input type="number" id="ang_3" value="30" min="-90" max="360" step="0.01" style="width: auto;"> (degree)</td>
                 <td><button type="submit" id="calc_3" value="calc_3" disabled>Calculate</button></td>
-            </tr></table></div>
+            </tr></table><div id="res_3" style="display: none;"></div>
+        </div>
         <p class="section-title">4. Date of the year when Sun appears in a certain position at a given time <input type="checkbox" oninput="hide_show('func_4')"></p>
         <div style="display: none;" id="func_4">
             <table style="width: 85%;"><tr>
@@ -169,7 +170,7 @@
             <input type="checkbox" onclick="hide_show('opt_4')"></i> <span id="opt_4" style="display: none;"> 
             <b>Date from:</b> <input type="dfrom_4" value="2024-04-01" width="auto">;
             <b>Date to: </b><input type="dfrom_4" value="2024-10-15" width="auto"> <i style="font-size: small;">(make sure GMT time zone is the same over this period)</i></span> 
-            <button type="submit" id="calc_4" value="calc_4" style="width: auto;">Calculate >></button>
+            <button type="submit" id="calc_4" value="calc_4" disabled style="width: auto;">Calculate >></button>
         
         </div>
         <br><i style="background-color: lightgoldenrodyellow;">Other calculators</i><br>
@@ -203,7 +204,7 @@
             if (cos >= 1) {
                 return 0;
             } else if (cos <= -1) {
-                return -Math.PI
+                return Math.PI
             }
             return Math.acos(cos);
         } function vec_debase(v1, v2) {
@@ -236,7 +237,21 @@
                 drn = 2*Math.PI - drn;
             }
             return [drn, ht]
-        } function direction_class(ang) {
+        } function sun_ht(sinlat0, lat, noon_shift) {
+            const sun = [0, sin_to_cos(sinlat0), sinlat0];
+            const loc = sun_vectors(lat, noon_shift)[0];
+            return Math.PI/2 - vec_angle(sun, loc);
+        } function sun_drn(sinlat0, lat, noon_shift) {
+            const vecs = sun_vectors(lat, noon_shift);
+            const sun = [0, sin_to_cos(sinlat0), sinlat0];
+            const ort = vec_debase(sun, vecs[0]);
+            let drn = vec_angle(ort, vecs[2]);
+            if (dot(ort, vecs[1]) < 0) {
+                drn = 2*Math.PI - drn;
+            }
+            return drn;
+        }
+        function direction_class(ang) {
             const rg = 10;
             if (ang < rg || ang > 360-rg)
                 return "North";
@@ -256,11 +271,21 @@
                 return "Northwest";
         }
 
-        function time_convert(secs) {
+        function time_convert(seconds) {
+            let secs = seconds;
+            let d = 0;
+            while (seconds < 0) {
+                secs += 86400;
+                d = -1;
+            }
+            while (seconds > 86400) {
+                secs -= 86400;
+                d += 1;
+            }
             const h = parseInt(secs / 3600);
             const m = parseInt((secs - 3600*h) / 60);
             const s = secs - 3600*h - 60*m;
-            return [h, m, s]
+            return [h, m, s, d]
         } function time_display(secs) {
             let tcv = time_convert(secs);
             for (i = 0; i < tcv.length; i++) {
@@ -268,7 +293,13 @@
                     tcv[i] = "0"+String(tcv[i]);
                 }
             }
-            return tcv[0]+":"+tcv[1]+":"+tcv[2]
+            let res = tcv[0]+":"+tcv[1]+":"+tcv[2];
+            if (tcv[3] > 0) {
+                res += " ["+tcv[3]+"day(s) after]";
+            } else if (tcv[3] < 0) {
+                res += " ["+(-tcv[3])+"day(s) before]";
+            }
+            return res;
         }
         function sun_direct_lat_sin(date) {
             const y = date.getFullYear();
@@ -309,7 +340,7 @@
                 document.getElementById("mode").innerText = "3D Visualization page >>";
             }
         } function input_ang(aname, num) {
-            const field = "ang"+"_"+num; 
+            const field = "ang_"+num; 
             document.getElementById("calc_"+num).disabled = false;
             switch (aname) {
                 case "ht":
@@ -331,11 +362,11 @@
             }
         }
 
-        function sunrise_set() {
-            const lon = document.getElementById("lon_1").value
-            const lat = deg_to_rad(document.getElementById("lat_1").value);
-            const tz = document.getElementById("tz_1").value;
-            const date = new Date(document.getElementById("date_1").value)
+        function sunrise_set(num) {
+            const lon = document.getElementById("lon_"+num).value
+            const lat = deg_to_rad(document.getElementById("lat_"+num).value);
+            const tz = document.getElementById("tz_"+num).value;
+            const date = new Date(document.getElementById("date_"+num).value)
             const pss = sun_direct_lat_sin(date);
             const dl = day_length(pss, lat);
             const hdl = dl/2;
@@ -343,28 +374,90 @@
             const nsfts = [-hdl/86400*2*Math.PI, hdl/86400*2*Math.PI];
             const drn = nsfts.map((x,i) => Math.round(100*rad_to_deg(sun_geom(pss, lat, [x])[0]))/100);
             const dclass = drn.map((x,i) => direction_class(x));
-            document.getElementById("res_1").style.display = "block";
-            document.getElementById("_1_sr").innerHTML = time_display(Math.round(noon - hdl));
-            document.getElementById("_1_rd").innerHTML = drn[0]+" <span style='font-size: small'>"+dclass[0]+"</span>"
-            document.getElementById("_1_ss").innerHTML = time_display(Math.round(noon + hdl));
-            document.getElementById("_1_sd").innerHTML = drn[1]+" <span style='font-size: small'>"+dclass[1]+"</span>"
-            document.getElementById("_1_dl").innerHTML = time_display(Math.round(dl));
+            document.getElementById("res_"+num).style.display = "block";
+            document.getElementById("_"+num+"_sr").innerHTML = time_display(Math.round(noon - hdl));
+            document.getElementById("_"+num+"_rd").innerHTML = drn[0]+" <span style='font-size: small'>"+dclass[0]+"</span>"
+            document.getElementById("_"+num+"_ss").innerHTML = time_display(Math.round(noon + hdl));
+            document.getElementById("_"+num+"_sd").innerHTML = drn[1]+" <span style='font-size: small'>"+dclass[1]+"</span>"
+            document.getElementById("_"+num+"_dl").innerHTML = time_display(Math.round(dl));
         }
 
-        function sun_position() {
-            const lon = document.getElementById("lon_2").value
-            const lat = deg_to_rad(document.getElementById("lat_2").value);
-            const tz = document.getElementById("tz_2").value;
-            const date0 = new Date(document.getElementById("date_2").value);
-            const date = new Date(document.getElementById("date_2").value+"T"+document.getElementById("time_2").value+":00")
+        function sun_position(num) {
+            const lon = document.getElementById("lon_"+num).value
+            const lat = deg_to_rad(document.getElementById("lat_"+num).value);
+            const tz = document.getElementById("tz_"+num).value;
+            const date0 = new Date(document.getElementById("date_"+num).value);
+            const date = new Date(document.getElementById("date_"+num).value+"T"+document.getElementById("time_"+num).value+":00")
             const noon = noon_seconds(tz, lon);
             const sinlat0 = sun_direct_lat_sin(date);
             const res = sun_geom(sinlat0, lat, [noon, (date - date0)/1000])
-            document.getElementById("res_2").style.display = "block";
+            document.getElementById("res_"+num).style.display = "block";
             const ht = Math.round(100*rad_to_deg(res[1]))/100;
             const drn = Math.round(100*rad_to_deg(res[0]))/100;
-            document.getElementById("_2_sh").value = ht + " degree";
-            document.getElementById("_2_sd").value = drn +" - "+ direction_class(drn);
+            document.getElementById("_"+num+"_sh").value = ht + " degree";
+            document.getElementById("_"+num+"_sd").value = drn +" - "+ direction_class(drn);
+        }
+
+        function _approach_time(sinlat0, lat, noon, calc, low, high, std) {
+            let tl = low;
+            let th = high;
+            let t = tl;
+            while (true) {
+                const val = calc(sinlat0, lat, [noon, t])
+                const diff = val - std;
+                if (diff < 0) {
+                    tl = t;
+                    if (th - t <= 1) {
+                        if (Math.abs(diff) > Math.abs(calc(sinlat0, lat, [noon, th]) - std))
+                            t = th;
+                        break;
+                    }
+                    t = (th + t)/2;
+                } else {
+                    th = t;
+                    if (t - tl <= 1) {
+                        if (Math.abs(diff) > Math.abs(calc(sinlat0, lat, [noon, tl]) - std))
+                            t = tl;
+                        break;
+                    }
+                    t = (t + tl)/2;
+                }
+            }
+            return Math.round(t)
+        } function _approach_date() {
+
+        }
+
+        function sun_time_limit(num) {
+            const lon = document.getElementById("lon_"+num).value
+            const lat = deg_to_rad(document.getElementById("lat_"+num).value);
+            const tz = document.getElementById("tz_"+num).value;
+            const date0 = new Date(document.getElementById("date_"+num).value);
+            const noon = noon_seconds(tz, lon);
+            const sinlat0 = sun_direct_lat_sin(date0);
+            let degree = document.getElementById("ang_"+num).value;
+            const ang = deg_to_rad(degree);
+            let res = "";
+            let mode = "height";
+            document.getElementById("res_"+num).style.display = "block";
+            if (document.getElementById("ang_"+num).min == -90) {
+                // input angle is sun height, symmetrical monotonic by noon
+                const ht_range = [0,-Math.PI].map(ns => sun_ht(sinlat0, lat, [ns])[0]);
+                if (ht_range[0] < ang || ht_range[1] > ang) {
+                    res = "**Sun height NOT reachable given the date and location -- Max height: "+rad_to_deg(ht_range[0])+"; Min height: "+rad_to_deg(ht_range[1])+" (degree) **";
+                } else {
+                    const t1 = _approach_time(sinlat0, lat, noon, sun_ht, noon-43200, noon, ang);
+                    const t2 = 2*noon - t1;
+                    res = "<1> "+time_display(t1)+" | <2> "+time_display(t2);
+                }
+                degree += " degree"
+            } else {
+                mode = "direction"; // Whole day monotonic
+                const t = _approach_time(sinlat0, lat, noon, sun_drn, noon-43200, noon+43200, ang);
+                res = time_display(t);
+                degree = degree +" ("+ direction_class(degree)+")"
+            }
+            document.getElementById("res_"+num).innerHTML = "Times of the day when Sun "+mode+" is "+degree+": <textarea readonly>"+res+"</textarea>";
         }
 
         function sphere_distance() {
@@ -384,8 +477,9 @@
         function process_form(fm) {
             try {
                 switch (document.activeElement.value) {
-                    case "calc_1": sunrise_set(); break;
-                    case "calc_2": sun_position(); break;
+                    case "calc_1": sunrise_set(1); break;
+                    case "calc_2": sun_position(2); break;
+                    case "calc_3": sun_time_limit(3); break
                     case "calc_a1": sphere_distance(); break;
                 } 
             } catch(err) {
