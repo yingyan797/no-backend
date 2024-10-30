@@ -43,7 +43,6 @@
         }
 
         table {
-            width: 70%;
             margin-bottom: 1rem;
             border-collapse: collapse;
         }
@@ -80,10 +79,11 @@
         }
 
         textarea {
-            width: 100%;
             font-size: large;
             background-color: lightgray;
             color: blue;
+            width: 18em;
+            height: 4em;
             padding: 0.5rem;
             border-radius: 4px;
         }
@@ -108,14 +108,11 @@
         <i style="font-size: larger; background-color: lightgoldenrodyellow;">[ Sun calculator ] -- Select one or more of the functions -- </i>
         <p class="section-title">1. Sunrise/Sunset time and direction, Daylight hours <input type="checkbox" oninput="hide_show('func_1')"></p>
         <div style="display: none;" id="func_1">
-            <table><tr>
-                <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th>
-            </tr><tr">
-                <td><input type="number" id="lon_1" min="-180" max="180" step="0.01" value="120"></td> 
-                <td><input type="number" id="lat_1" min="-90" max="90" step="0.01" value="35"></td> 
-                <td><input type="number" id="tz_1" min="-12" max="12" value="8"></td> 
-                <td><input type="date" id="date_1" value="2024-03-21"></td>
-            </tr></table> -- Results -- <button type="submit" value="calc_1">Calculate</button>
+            <table><tr><th>Longitude</th><td><input type="number" id="lon_1" min="-180" max="180" step="0.01" value="120"></td></tr>
+                <tr><th>Latitude</th><td><input type="number" id="lat_1" min="-90" max="90" step="0.01" value="35"></td> </tr>
+                <tr><th>Time zone</th><td><input type="number" id="tz_1" min="-12" max="12" value="8"></td> </tr>
+                <tr><th>Date</th><td><input type="date" id="date_1" value="2024-05-18"></td><td><button type="submit" value="calc_1">Calculate</button></td></tr>
+            </table> -- Results -- 
             <table style="display: none;" id="res_1">
                 <tr><th>Sunrise</th><th>Direction</th><th>Sunset</th><th>Direction</th>
                     <th>Daylight</th><th style="color: black;">Sun trajectory of the day </th></tr>
@@ -124,47 +121,40 @@
             </table></div> 
         <p class="section-title">2. Sun height and direction at any time of the day <input type="checkbox" oninput="hide_show('func_2')"></p>
         <div style="display: none;" id="func_2">
-            <table><tr>
-                <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th><th>Time</th>
-            </tr><tr">
-                <td><input type="number" id="lon_2" min="-180" max="180" step="0.01" value="120"></td> 
-                <td><input type="number" id="lat_2" min="-90" max="90" step="0.01" value="35"></td> 
-                <td><input type="number" id="tz_2" min="-12" max="12" value="8"></td> 
-                <td><input type="date" id="date_2" value="2024-03-21"></td>
-                <td><input type="time" id="time_2" value="17:05"></td>
-                <td><button type="submit" value="calc_2">Calculate</button></td>
-            </tr></table> <div id="res_2" style="display: none; color: cornflowerblue;">
-        Sun height: <b id="_2_sh" style="color: black;"></b>; Sun direction <b id="_2_sd" style="color: black;"></b> <br>
+            <table><tr><th>Longitude</th><td><input type="number" id="lon_2" min="-180" max="180" step="0.01" value="116"></td> </tr>
+                <tr><th>Latitude</th><td><input type="number" id="lat_2" min="-90" max="90" step="0.01" value="40"></td></tr>
+                <tr><th>Time zone</th><td><input type="number" id="tz_2" min="-12" max="12" value="8"></td> </tr>
+                <tr><th>Date</th><td><input type="date" id="date_2" value="2024-10-15"></td></tr>
+                <tr><th>Time</th><td><input type="time" id="time_2" value="17:05"></td><td><button type="submit" value="calc_2">Calculate</button></td></tr>
+            </table> <div id="res_2" style="display: none; color: cornflowerblue;">
+        Sun height: <b id="_2_sh" style="color: black;"></b>; <br> Direction: <b id="_2_sd" style="color: black;"></b> <br>
                 Sun trajectory of the day: <button type="submit" id="plot_2" value="draw">Draw >></button>
         </div></div> 
         <p class="section-title">3. Time(s) of the day when Sun reaches a certain height / direction <input type="checkbox" oninput="hide_show('func_3')"></p>
         <div style="display: none;" id="func_3">
-            <table style="width: 85%;"><tr>
-                <th>Longitude</th><th>Latitude</th><th>Time zone</th><th>Date</th>
-                <th><input type="radio" name="angmode_3" oninput="input_ang('ht',3)"><label for="angmode_3" id="ht_lab_3">Sun height</label>; 
-                    <input type="radio" name="angmode_3"oninput="input_ang('drn',3)"><label for="angmode_3" id="drn_lab_3">Direction</label></th>
-            </tr><tr">
-                <td><input type="number" id="lon_3" min="-180" max="180" step="0.01" value="120"></td> 
-                <td><input type="number" id="lat_3" min="-90" max="90" step="0.01" value="35"></td> 
-                <td><input type="number" id="tz_3" min="-12" max="12" value="8"></td> 
-                <td><input type="date" id="date_3" value="2024-03-21"></td>
-                <td><input type="number" id="ang_3" value="30" min="-90" max="360" step="0.01"> (degree)</td>
-                <td><button type="submit" id="calc_3" value="calc_3" disabled>Calculate</button></td>
-            </tr></table><div id="res_3" style="display: none;"></div>
+            <table>
+                <tr><th>Longitude</th><td><input type="number" id="lon_3" min="-180" max="180" step="0.01" value="107"></td> </tr>
+                <tr><th>Latitude</th><td><input type="number" id="lat_3" min="-90" max="90" step="0.01" value="25"></td></tr>
+                <tr><th>Time zone</th><td><input type="number" id="tz_3" min="-12" max="12" value="8"></td> </tr>
+                <tr><th>Date</th><td><input type="date" id="date_3" value="2024-08-07"></td> </tr>                   
+                <tr><th><input type="radio" name="angmode_3" oninput="input_ang('ht',3)"><label for="angmode_3" id="ht_lab_3">Sun height</label></th> 
+                    <td rowspan="2"><input type="number" id="ang_3" value="30" min="-90" max="360" step="0.01"> (degree)</td></tr>
+                <tr><th><input type="radio" name="angmode_3"oninput="input_ang('drn',3)"><label for="angmode_3" id="drn_lab_3">Direction</label></th></tr>
+            </table> <button type="submit" id="calc_3" value="calc_3" disabled>Calculate >></button>
+            <div id="res_3" style="display: none;"></div>
         </div>
         <p class="section-title">4. Dates of the year when Sun appears in a certain position at a given time <input type="checkbox" oninput="hide_show('func_4')"></p>
         <div style="display: none;" id="func_4">
-            <table style="width: 85%;"><tr>
-                <th>Longitude</th><th>Latitude</th><th>Year</th><th>Time zone</th><th>Time</th>
-                <th><input type="radio" name="angmode_4" oninput="input_ang('ht',4)"><label for="angmode_4" id="ht_lab_4">Sun height</label>; 
-                    <input type="radio" name="angmode_4" oninput="input_ang('drn',4)"><label for="angmode_4" id="drn_lab_4">Direction</label></th>
-            </tr><tr">
-                <td><input type="number" id="lon_4" min="-180" max="180" step="0.01" value="120"></td> 
-                <td><input type="number" id="lat_4" min="-90" max="90" step="0.01" value="35"></td> 
-                <td><input type="number" id="year_4" min="1" max="9900" step="1" value="2024"></td> 
-                <td><input type="number" id="tz_4" min="-12" max="12" value="8"></td> 
-                <td><input type="time" id="time_4" value="17:05"></td>
-                <td><input type="number" id="ang_4" value="30" min="-90" max="360" step="0.01"> (degree)</td>
+            <table>
+                <tr><th>Longitude</th><td><input type="number" id="lon_4" min="-180" max="180" step="0.01" value="0"></td> </tr>
+                <tr><th>Latitude</th><td><input type="number" id="lat_4" min="-90" max="90" step="0.01" value="52"></td></tr>
+                <tr><th>Year</th><td><input type="number" id="year_4" min="1" max="9900" step="1" value="2024"></td> </tr>
+                <tr><th>Time zone</th><td><input type="number" id="tz_4" min="-12" max="12" value="1"></td> </tr>
+                <tr><th>Time</th><td><input type="time" id="time_4" value="17:05"></td></tr>
+                <tr><th><input type="radio" name="angmode_4" oninput="input_ang('ht',4)"><label for="angmode_4" id="ht_lab_4">Sun height</label></th>
+                    <td rowspan="2"><input type="number" id="ang_4" value="250" min="-90" max="360" step="0.01"> (degree)</td></tr>
+                <tr><th><input type="radio" name="angmode_4" oninput="input_ang('drn',4)"><label for="angmode_4" id="drn_lab_4">Direction</label></th></tr>
+                
             </tr></table> <i style="color: gray; font-size: 15;">Optional condition: narrow down the date range (for Daylight daving time, etc.) 
             <input type="checkbox" onclick="hide_show('opt_4')"></i> <span id="opt_4" style="display: none;"> 
             <b>Date from:</b> <input id="dfrom_4" type="date" value="2024-04-01">;
@@ -182,7 +172,7 @@
             <tr><th>2</th><td><input type="number" id="lon_a1_2" min="-180" max="180" step="0.01" value="25"></td> 
                 <td><input type="number" id="lat_a1_2" min="-90" max="90" step="0.01" value="45"></td></tr>
         </table>Earth radius (km): <input type="number" id="radius_a1" value="6371" min="0" max="9e10"><br>
-        Distance: <button type="submit" value="calc_a1">Calculate >></button><textarea readonly id="res_a1"></textarea>
+        Distance: <button type="submit" value="calc_a1">Calculate >></button><br><textarea readonly id="res_a1"></textarea>
         </div><p class="section-title">2. The distance to an object in the sky observed at a certain angle <input type="checkbox" oninput="hide_show('func_a2')"></p>
         <p class="section-title">3. Maximum observable distance to horizon standing at a given altitude<input type="checkbox" oninput="hide_show('func_a2')"></p>
     </div><div id="visual3d" style="display: none;"> <h3 style="color: cornflowerblue;">3D Graphical display of the related phenomenon</h3>
@@ -435,7 +425,7 @@
             const ydays = (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) ? 366 : 365;
             const sun_rate = 2 * Math.PI / ydays;
             const axis_sin = Math.sin(deg_to_rad(23.5));
-            let phase = -sprg_eqnx * sun_rate;
+            let phase = sprg_eqnx * sun_rate;
             let prev_diff = 100;
             let date_nums = [];
             for (i = 0; i < (high-low)/86400000+1; i++) {
@@ -467,18 +457,18 @@
             const sinlat0 = sun_direct_lat_sin(date0);
             let degree = document.getElementById("ang_"+num).value;
             const ang = deg_to_rad(degree);
-            let res = "";
+            let res = [];
             let mode = "height";
             document.getElementById("res_"+num).style.display = "block";
             if (document.getElementById("ang_"+num).min == -90) {
                 // input angle is sun height, symmetrical monotonic by noon
                 const ht_range = [0,-Math.PI].map(ns => sun_ht(sinlat0, lat, [ns]));
                 if (ht_range[0] < ang || ht_range[1] > ang) {
-                    res = "**Sun height NOT reachable given the date and location -- Max height: "+rad_to_deg(ht_range[0])+"; Min height: "+rad_to_deg(ht_range[1])+" (degree) **";
+                    res = "**Sun height NOT reachable -- Max height: "+rad_to_deg(ht_range[0])+"; Min height: "+rad_to_deg(ht_range[1])+" (degree) **";
                 } else {
                     const t1 = _approach_time(sinlat0, lat, noon, sun_ht, noon-43200, noon, ang);
                     const t2 = 2*noon - t1;
-                    res = "<1> "+time_display(t1)+" | <2> "+time_display(t2);
+                    res = time_display(t1) + "; " +time_display(t2);
                 }
                 degree += " degree"
             } else {
@@ -487,7 +477,7 @@
                 res = time_display(t);
                 degree = degree +" ("+ direction_class(degree)+")"
             }
-            document.getElementById("res_"+num).innerHTML = "Times of the day when Sun "+mode+" is "+degree+": <textarea readonly>"+res+"</textarea>";
+            document.getElementById("res_"+num).innerHTML = "<textarea readonly>" +res+"</textarea><br> At these times of "+document.getElementById("date_"+num).value+", Sun "+mode+" is "+degree
         }
         function sun_date_limit(num) {
             const lon = document.getElementById("lon_"+num).value
@@ -514,15 +504,15 @@
                 date_nums = _approach_date(lat, year, noon_shift, sun_drn, dfrom, dto, std);
             }
             let res = "<th> No solution </th>";
-            if (date_nums.length > 0){
+            if (date_nums.length > 0) {
+                const base_value = dfrom.valueOf();
                 res = date_nums.map(num => {
-                    const date = new Date(year, 0, 1);
-                    date.setDate(dfrom.getDate() + num);
+                    const date = new Date(base_value + num * 86400000);
                     return "<td>"+date_display(date.getMonth(), date.getDate())+"</td>";
                 })
             }
             document.getElementById("res_"+num).style.display = "block";
-            document.getElementById("res_"+num).innerHTML = "Dates of the year when Sun "+mode+" is "+ang+" degree <table style='width:auto'><tr>"+res+"</tr></table>";
+            document.getElementById("res_"+num).innerHTML = "<table style='width:auto'><tr>"+res+"</tr></table> On these dates, Sun "+mode+" is "+ang+" degree at "+iptime;
         }
 
         function sphere_distance() {
