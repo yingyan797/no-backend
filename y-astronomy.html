@@ -1,6 +1,7 @@
 <head>
     <title>YAS-Sun calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -111,13 +112,14 @@
             <table><tr><th>Longitude</th><td><input type="number" id="lon_1" min="-180" max="180" step="0.01" value="120"></td></tr>
                 <tr><th>Latitude</th><td><input type="number" id="lat_1" min="-90" max="90" step="0.01" value="35"></td> </tr>
                 <tr><th>Time zone</th><td><input type="number" id="tz_1" min="-12" max="12" value="8"></td> </tr>
-                <tr><th>Date</th><td><input type="date" id="date_1" value="2024-05-18"></td><td><button type="submit" value="calc_1">Calculate</button></td></tr>
+                <tr><th>Date</th><td><input type="date" id="date_1" value="2024-05-18"></td></tr><tr>
+                    <td colspan="2"><button type="submit" value="calc_1">Calculate</button> | <button onclick="rise_set(1)">
+                        Visualize sunrise/sunset of the year >></button></td></tr>
             </table> -- Results -- 
             <table style="display: none;" id="res_1">
                 <tr><th>Sunrise</th><th>Direction</th><th>Sunset</th><th>Direction</th>
-                    <th>Daylight</th><th style="color: black;">Sun trajectory of the day </th></tr>
-                <tr style="color: black;"><td id="_1_sr"></td><td id="_1_rd"></td><td id="_1_ss"></td><td id="_1_sd"></td><td id="_1_dl"></td>
-                    <td><input type="submit" id="plot_1" value="Draw trajectory >>"></td></tr>
+                    <th>Daylight</th></tr>
+                <tr style="color: black;"><td id="_1_sr"></td><td id="_1_rd"></td><td id="_1_ss"></td><td id="_1_sd"></td><td id="_1_dl"></td></tr>
             </table></div> 
         <p class="section-title">2. Sun height and direction at any time of the day <input type="checkbox" oninput="hide_show('func_2')"></p>
         <div style="display: none;" id="func_2">
@@ -175,8 +177,23 @@
         Distance: <button type="submit" value="calc_a1">Calculate >></button><br><textarea readonly id="res_a1"></textarea>
         </div><p class="section-title">2. The distance to an object in the sky observed at a certain angle <input type="checkbox" oninput="hide_show('func_a2')"></p>
         <p class="section-title">3. Maximum observable distance to horizon standing at a given altitude<input type="checkbox" oninput="hide_show('func_a2')"></p>
-    </div><div id="visual3d" style="display: none;"> <h3 style="color: cornflowerblue;">3D Graphical display of the related phenomenon</h3>
-            <textarea readonly id="vis_desc"></textarea><br>Feature under development... <canvas></canvas></div> 
+    </div>
+    <div id="visual3d" style="display: none;">  <div id="vis_head" style="display: none;">
+        <h3 style="color: cornflowerblue;">3D Graphical display of the phenomenon: </h3>
+            <i id="vis_desc" style="color: gray;"></i><br> <canvas id="vis_phen"></canvas></div>
+        <h3 style="color: blueviolet;">Draw sun trajectory of a day</h3>
+        <table><tr><th>Longitude</th><td><input type="number" id="lon_vis" min="-180" max="180" step="0.01" value="116"></td> </tr>
+            <tr><th>Latitude</th><td><input type="number" id="lat_vis" min="-90" max="90" step="0.01" value="40"></td></tr>
+            <tr><th>Time zone</th><td><input type="number" id="tz_vis" min="-12" max="12" value="8"></td> </tr>
+            <tr><th>Date</th><td><input type="date" id="date_vis" value="2024-10-15"></td>
+                <td><button onclick="traj_date()">Draw >></button></td></tr> 
+            <tr><td colspan="3" style="color: gray;"><b style="color: red;">Red</b> segment represents daylight hours when
+                Sun is above horizon, and <b style="color: black;">Black</b> represents night. The arrow shape in the 
+                    middle is at horizon level, its direction corresponding to sunrise / sunset.
+                </span></td></tr></table>
+            <div id="vis_traj" style="width: 100%;"></div>
+        </table>
+        </div> 
     </form>
     <script>
         function deg_to_rad(deg) {
@@ -527,6 +544,70 @@
             const ang = 2*Math.asin(Math.sqrt(rise2+run2)/2);
             const d = document.getElementById("radius_a1").value*ang
             document.getElementById("res_a1").value = Math.round(100*d)/100 + " km";
+        }
+
+        function rise_set(num) {
+            document.getElementById("vis_head").style.display = "block";
+            document.getElementById("vis_desc").innerText = "Sunrise, sunset";
+            vis_switch();
+        }
+
+        function traj_date() {
+            try {
+            const lon = document.getElementById("lon_vis").value;
+            const lat = deg_to_rad(document.getElementById("lat_vis").value);
+            const tz = document.getElementById("tz_vis").value;
+            const date = document.getElementById("date_vis").value;
+            const noon_rate = 2*Math.PI/288;
+            let noon_shift = - noon_rate * 144;
+            const sinlat0 = sun_direct_lat_sin(new Date(date));
+            const xs = [];
+            const ys = [];
+            const zs = [];
+            const cs = [];
+            let prev_ht = -1;
+            let c = 'black';
+
+            for (i = 0; i < 288; i++) {
+                const pos = sun_geom(sinlat0, lat, [noon_shift]);
+                const l = 100*Math.cos(pos[1]);
+                xs.push(l*Math.cos(pos[0]));
+                ys.push(l*Math.sin(pos[0]));
+                zs.push(100*Math.sin(pos[1]));
+                if (pos[1] * prev_ht <= 0) {
+                    xs.push(0);
+                    ys.push(0);
+                    zs.push(0);
+                    cs.push(c)
+                    if (c == 'black') {
+                        c = 'red';
+                    } else {
+                        c = 'black';
+                    }
+                }
+                cs.push(c);
+                noon_shift += noon_rate;
+                prev_ht = pos[1];
+            }
+            
+            Plotly.newPlot('vis_traj', [{
+                type: 'scatter3d',
+                mode: 'lines',
+                x: xs,
+                y: ys,
+                z: zs,
+                opacity: 1,
+                line: {
+                    width: 6,
+                    color: cs,
+                    reversescale: false
+                }
+                }], {
+                height: 640
+            });
+            } catch (err) {
+                alert(err)
+            }
         }
 
         function process_form(fm) {
