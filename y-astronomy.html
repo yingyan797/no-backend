@@ -187,9 +187,9 @@
             <tr><th>Time zone</th><td><input type="number" id="tz_vis" min="-12" max="12" value="8"></td> </tr>
             <tr><th>Date</th><td><input type="date" id="date_vis" value="2024-10-15"></td>
                 <td><button onclick="traj_date()">Draw >></button></td></tr> 
-            <tr><td colspan="3" style="color: gray;"><b style="color: red;">Red</b> segment represents daylight hours when
-                Sun is above horizon, and <b style="color: black;">Black</b> represents night. The arrow shape in the 
-                    middle is at horizon level, its direction corresponding to sunrise / sunset.
+            <tr><td colspan="3" style="color: gray;"><b style="color: red;">Red</b> segment represents daylight when
+                Sun is above horizon, and <b style="color: black;">Black</b> represents night. 4 Connections to the center 
+                represents midnight, sunrise, noon, sunset respectively.
                 </span></td></tr></table>
             <div id="vis_traj" style="width: 100%;"></div>
         </table>
@@ -561,24 +561,29 @@
             const noon_rate = 2*Math.PI/288;
             let noon_shift = - noon_rate * 144;
             const sinlat0 = sun_direct_lat_sin(new Date(date));
-            const xs = [];
-            const ys = [];
-            const zs = [];
-            const cs = [];
-            let prev_ht = -1;
             let c = 'black';
-
+            const xs = [0];
+            const ys = [0];
+            const zs = [0];
+            const cs = [c];
+            let prev_ht = -1;
+            
+            function link_origin() {
+                xs.push(0);
+                ys.push(0);
+                zs.push(0);
+                cs.push(c);
+            }
             for (i = 0; i < 288; i++) {
                 const pos = sun_geom(sinlat0, lat, [noon_shift]);
                 const l = 100*Math.cos(pos[1]);
                 xs.push(l*Math.cos(pos[0]));
                 ys.push(l*Math.sin(pos[0]));
                 zs.push(100*Math.sin(pos[1]));
-                if (pos[1] * prev_ht <= 0) {
-                    xs.push(0);
-                    ys.push(0);
-                    zs.push(0);
-                    cs.push(c)
+                if (i == 144) {
+                    link_origin()
+                } else if (pos[1] * prev_ht <= 0) {
+                    link_origin();
                     if (c == 'black') {
                         c = 'red';
                     } else {
@@ -589,6 +594,7 @@
                 noon_shift += noon_rate;
                 prev_ht = pos[1];
             }
+            link_origin();
             
             Plotly.newPlot('vis_traj', [{
                 type: 'scatter3d',
