@@ -259,7 +259,7 @@
             return drn;
         }
         function direction_class(ang) {
-            const rg = 10;
+            const rg = 15;
             if (ang < rg || ang > 360-rg)
                 return "North";
             if (ang >= rg && ang <= 90-rg)
@@ -584,6 +584,10 @@
                 xs.push(l*Math.cos(pos[0]));
                 ys.push(-l*Math.sin(pos[0]));
                 zs.push(100*Math.sin(pos[1]));
+                cs.push(c);
+                const drn = Math.round(100*rad_to_deg(pos[0]))/100;
+                ts.push(time_display(time)+", "+direction_class(drn)+"("+drn+"), Height: "+Math.round(rad_to_deg(pos[1])*100)/100);
+                // ts.push({"Time": time_display(time), "Direction":drn+" ("+direction_class(drn)+")", "Height":rad_to_deg(pos[1])});
                 if (m == 144) {
                     link_origin()
                 } else if (pos[1] * prev_ht <= 0) {
@@ -594,8 +598,6 @@
                         c = 'black';
                     }
                 }
-                cs.push(c);
-                ts.push(time_display(time));
                 // alert(m+"+"+time)
                 noon_shift += noon_rate;
                 time += 300;
@@ -609,6 +611,7 @@
                 y: ys,
                 z: zs,
                 text: ts,
+                hoverinfo: 'text',
                 opacity: 1,
                 line: {
                     width: 6,
