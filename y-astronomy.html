@@ -281,11 +281,11 @@
         function time_convert(seconds) {
             let secs = seconds;
             let d = 0;
-            while (seconds < 0) {
+            while (secs < 0) {
                 secs += 86400;
                 d = -1;
             }
-            while (seconds > 86400) {
+            while (secs > 86400) {
                 secs -= 86400;
                 d += 1;
             }
@@ -295,16 +295,16 @@
             return [h, m, s, d]
         } function time_display(secs) {
             let tcv = time_convert(secs);
-            for (i = 0; i < tcv.length; i++) {
+            for (i = 0; i < tcv.length-1; i++) {
                 if (tcv[i] < 10) {
                     tcv[i] = "0"+String(tcv[i]);
                 }
             }
             let res = tcv[0]+":"+tcv[1]+":"+tcv[2];
             if (tcv[3] > 0) {
-                res += " ["+tcv[3]+"day(s) after]";
+                res += " <"+tcv[3]+" day(s) after>";
             } else if (tcv[3] < 0) {
-                res += " ["+(-tcv[3])+"day(s) before]";
+                res += " <"+(-tcv[3])+"day(s) before>";
             }
             return res;
         } function date_display(m, d) {
@@ -560,12 +560,15 @@
             const date = document.getElementById("date_vis").value;
             const noon_rate = 2*Math.PI/288;
             let noon_shift = - noon_rate * 144;
+            let time = Math.round(noon_seconds(tz, lon) - 43200);
+
             const sinlat0 = sun_direct_lat_sin(new Date(date));
             let c = 'black';
             const xs = [0];
             const ys = [0];
             const zs = [0];
             const cs = [c];
+            const ts = [''];
             let prev_ht = -1;
             
             function link_origin() {
@@ -573,14 +576,15 @@
                 ys.push(0);
                 zs.push(0);
                 cs.push(c);
+                ts.push('');
             }
-            for (i = 0; i < 288; i++) {
+            for (m = 0; m < 288; m++) {
                 const pos = sun_geom(sinlat0, lat, [noon_shift]);
                 const l = 100*Math.cos(pos[1]);
                 xs.push(l*Math.cos(pos[0]));
-                ys.push(l*Math.sin(pos[0]));
+                ys.push(-l*Math.sin(pos[0]));
                 zs.push(100*Math.sin(pos[1]));
-                if (i == 144) {
+                if (m == 144) {
                     link_origin()
                 } else if (pos[1] * prev_ht <= 0) {
                     link_origin();
@@ -591,17 +595,20 @@
                     }
                 }
                 cs.push(c);
+                ts.push(time_display(time));
+                // alert(m+"+"+time)
                 noon_shift += noon_rate;
+                time += 300;
                 prev_ht = pos[1];
             }
-            link_origin();
-            
+            link_origin();    
             Plotly.newPlot('vis_traj', [{
                 type: 'scatter3d',
                 mode: 'lines',
                 x: xs,
                 y: ys,
                 z: zs,
+                text: ts,
                 opacity: 1,
                 line: {
                     width: 6,
