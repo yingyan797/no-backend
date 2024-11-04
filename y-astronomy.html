@@ -49,7 +49,6 @@
         }
 
         th,td {
-            background-color: azure;
             border: 1px solid cornflowerblue;
             padding: 0.5rem;
             font-size: 0.9rem;
@@ -102,8 +101,8 @@
         }
     </style>
 </head>
-<body>
-    <h2 style="background-color: skyblue"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Astronomy Sun calculator & graphics| 
+<body style="background-color: azure;">
+    <h2 style="background-color: skyblue"><a href="https://yingyan797.github.io/no-backend">Home page</a> | Y-Astronomy Sun calculator & graphics | 
         <button style="font-size: large; color: blueviolet;" onclick="vis_switch()"><b id="mode">3D Visualization page >></b></button></h2>
     <form action="javascript: ;"  onsubmit="process_form(this)"><br><div id="calculator" style="display: block;">
         <i style="font-size: larger; background-color: lightgoldenrodyellow;">[ Sun calculator ] -- Select one or more of the functions -- </i>
@@ -143,6 +142,7 @@
                     <td rowspan="2"><input type="number" id="ang_3" value="30" min="-90" max="360" step="0.01"> (degree)</td></tr>
                 <tr><th><input type="radio" name="angmode_3"oninput="input_ang('drn',3)"><label for="angmode_3" id="drn_lab_3">Direction</label></th></tr>
             </table> <button type="submit" id="calc_3" value="calc_3" disabled>Calculate >></button>
+            <i id="ctrl_3" style="display: block; color: lightsalmon;">(must choose either height or direction to continue)</i> 
             <div id="res_3" style="display: none;"></div>
         </div>
         <p class="section-title">4. Dates of the year when Sun appears in a certain position at a given time <input type="checkbox" oninput="hide_show('func_4')"></p>
@@ -162,7 +162,8 @@
             <b>Date from:</b> <input id="dfrom_4" type="date" value="2024-04-01">;
             <b>Date to: </b><input id="dto_4" type="date" value="2024-10-15"> <i style="font-size: small;">(make sure GMT time zone is the same over this period)</i></span> 
             <button type="submit" id="calc_4" value="calc_4" disabled>Calculate >></button>
-            <div id="res_4" style="display: none;"></div>
+            <i id="ctrl_4" style="display: block; color: lightsalmon;">(must choose either height or direction to continue)</i> 
+            <div id="res_4" style="display: none; width: 85%; background-color: cornflowerblue;"></div>
         
         </div>
         <br><i style="background-color: lightgoldenrodyellow;">Other calculators</i><br>
@@ -181,15 +182,15 @@
     <div id="visual3d" style="display: none;">  <div id="vis_head" style="display: none;">
         <h3 style="color: cornflowerblue;">3D Graphical display of the phenomenon: </h3>
             <i id="vis_desc" style="color: gray;"></i><br> <canvas id="vis_phen"></canvas></div>
-        <h3 style="color: blueviolet;">Draw sun trajectory of a day</h3>
+        <h3 style="color: blueviolet;">Draw sun trajectory of a day [If using mobile device, Turn it 90 degree to landscape]</h3>
         <table><tr><th>Longitude</th><td><input type="number" id="lon_vis" min="-180" max="180" step="0.01" value="116"></td> </tr>
             <tr><th>Latitude</th><td><input type="number" id="lat_vis" min="-90" max="90" step="0.01" value="40"></td></tr>
             <tr><th>Time zone</th><td><input type="number" id="tz_vis" min="-12" max="12" value="8"></td> </tr>
             <tr><th>Date</th><td><input type="date" id="date_vis" value="2024-10-15"></td>
                 <td><button onclick="traj_date()">Draw >></button></td></tr> 
-            <tr><td colspan="3" style="color: gray;"><b style="color: red;">Red</b> segment represents daylight when
+            <tr><td colspan="3" style="color: gray;"><b style="color: red;">Red segment </b> represents daylight when
                 Sun is above horizon, and <b style="color: black;">Black</b> represents night. 4 Connections to the center 
-                represents midnight, sunrise, noon, sunset respectively.
+                represent midnight, sunrise, noon, sunset respectively.
                 </span></td></tr></table>
             <div id="vis_traj" style="width: 100%;"></div>
         </table>
@@ -354,6 +355,7 @@
         } function input_ang(aname, num) {
             const field = "ang_"+num; 
             document.getElementById("calc_"+num).disabled = false;
+            document.getElementById("ctrl_"+num).style.display = "none";
             switch (aname) {
                 case "ht":
                     document.getElementById(field).min = -90;
