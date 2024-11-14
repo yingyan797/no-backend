@@ -179,18 +179,25 @@
         <p class="section-title">3. Maximum observable distance to horizon standing at a given altitude<input type="checkbox" oninput="hide_show('func_a2')"></p>
     </div>
     <div id="visual3d" style="display: none;">
-        <h3 style="color: blueviolet;">Draw sun trajectory of a day [If using mobile device, Turn it 90 degree to landscape]</h3>
-        <table><tr><th>Longitude</th><td><input type="number" id="lon_vis" min="-180" max="180" step="0.01" value="116"></td> </tr>
-            <tr><th>Latitude</th><td><input type="number" id="lat_vis" min="-90" max="90" step="0.01" value="40"></td></tr>
-            <tr><th>Time zone</th><td><input type="number" id="tz_vis" min="-12" max="12" value="8"></td> </tr>
-            <tr><th>Date</th><td><input type="date" id="date_vis" value="2024-10-15"></td>
-                <td><button onclick="process_form('traj')">Draw >></button></td></tr> 
-            <tr><td colspan="3" style="color: gray;"><b style="color: red;">Red segment </b> represents daylight when
-                Sun is above horizon, and <b style="color: black;">Black</b> represents night. 4 Connections to the center 
-                represent midnight, sunrise, noon, sunset respectively.
-                </span></td></tr></table>
-            <div id="vis_traj" style="width: 100%;"></div>
-        </table>
+        <h3 style="color: blueviolet;">1. Draw sun trajectory of a day</h3>
+        <table><tr><th>Longitude: <input type="number" id="lon_vis" min="-180" max="180" step="0.01" value="116"></th> 
+            <td rowspan="5"><div id="vis_traj"></div></td></tr>
+            <tr><th>Latitude: <input type="number" id="lat_vis" min="-90" max="90" step="0.01" value="40"></th></tr>
+            <tr><th>Time zone: <input type="number" id="tz_vis" min="-12" max="12" value="8"></th> </tr>
+            <tr><th>Date: <input type="date" id="date_vis" value="2024-10-15"></th></tr><tr>
+                <td><textarea style="height: 170px;" readonly>If viewing on mobile device, turn the screen 90 degree to landscape before drawing.
+    - [Red] segment represents daylight when Sun is above horizon, and 
+    - [Black] represents night when sun is below horizon. 
+    - The 4 connections to the center represent midnight, sunrise, noon, sunset respectively. </textarea> 
+                    <br><button onclick="process_form('traj')">View sun trajectory >></button></td></tr> </table>
+        <h3 style="color: blueviolet;">2. View sunlight-shaded earth in space</h3>
+        <table><tr><th>Set Date: <input type="date" id="date_shad" value="2024-10-15"></th>
+                <td rowspan="5"> <canvas id="earth_shad"></canvas></td></tr>
+            <tr><th>Adjust time of the day: <input type="range" id="time_shad" min="0" max="86400" step="300" value="0"></th></tr>
+            <tr><th>Adjust camera Longitude: <input type="range" id="lon_shad" min="-180" max="180" step="1" value="90"></th> 
+            <tr><th>Adjust camera Latitude: <input type="range" id="lat_shad" min="-90" max="90" step="0.01" value="0"></th></tr>
+            <tr><td><textarea style="height: 100px;" readonly>If viewing on mobile device, turn the screen 90 degree to landscape before drawing</textarea> 
+                    <br><button onclick="process_form('shad')">Look at our earth from space >></button></td></tr> </table>
         </div> 
     <script src="utils/calculator.js"></script>
 </body>
