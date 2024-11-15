@@ -71,11 +71,11 @@ if __name__ == "__main__":
     with open("utils/model.js", "w") as f:
         f.write("")
     with open("utils/model.js", "a") as f:
-        f.write("const positions = [")
+        f.write("const earth_veitices = [")
         for row in v:
             for c in row:
                 f.write(f"{c},")
-        f.write("];\n\nconst indices = [")
+        f.write("];\n\nconst earth_indices = [")
         for row in i:
             for c in row:
                 f.write(f"{c},")
