@@ -150,7 +150,6 @@ function loadTexture(gl, url) {
       alert("error loading texture "+url+": "+ err)
     };
   };
-  image.crossOrigin = "";
   image.src = url;
   return texture;
 }
