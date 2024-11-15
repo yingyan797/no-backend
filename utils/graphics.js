@@ -86,7 +86,7 @@ function graph() {
 
     const buffers = initBuffers(gl);
     // Load texture
-    const texture = loadTexture(gl, "https://yingyan797.github.io/no-backend/static/rect-satellite-texture.png");
+    const texture = loadTexture(gl, "https://yingyan797.github.io/no-backend/static/ystem.png");
     // Flip image pixels into the bottom-to-top order that WebGL expects.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     drawScene(gl, programInfo, buffers, texture);
@@ -121,17 +121,20 @@ function loadTexture(gl, url) {
     pixel,
   );
   const image = new Image();
-  image.onload = function() {
-    try {
+  image.addEventListener("load", () => {
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      level,
-      internalFormat,
-      srcFormat,
-      srcType,
-      image,
-    );
+    try {
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        level,
+        internalFormat,
+        srcFormat,
+        srcType,
+        image,
+      );
+    } catch (err) {
+        alert(err);
+      }
     
     // WebGL1 has different requirements for power of 2 images
     // vs. non power of 2 images so check if the image is a
@@ -146,10 +149,7 @@ function loadTexture(gl, url) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
-    } catch (err) {
-      alert("error loading texture "+url+": "+ err)
-    };
-  };
+  });
   image.src = url;
   return texture;
 }
