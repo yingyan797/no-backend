@@ -14,3 +14,5 @@ def preprocess(ipf="static/rect-satellite.png", opf="static/rect-satellite-textu
 
 if __name__ == "__main__":
     preprocess()
+
+

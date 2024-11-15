@@ -50,47 +50,50 @@ function graph() {
 
     const vsSource = `
     attribute vec4 aVertexPosition;
-    attribute vec2 aTextureCoord;
+    attribute vec4 aVertexColor;
 
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
 
-    varying highp vec2 vTextureCoord;
+    varying lowp vec4 vColor;
 
     void main(void) {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-      vTextureCoord = aTextureCoord;
+      vColor = aVertexColor;
     }
-  `; const fsSource = `
-  varying highp vec2 vTextureCoord;
+  `;
 
-  uniform sampler2D uSampler;
+  // Fragment shader program
 
-  void main(void) {
-    gl_FragColor = texture2D(uSampler, vTextureCoord);
-  }
-`;
+  const fsSource = `
+    varying lowp vec4 vColor;
+
+    void main(void) {
+      gl_FragColor = vColor;
+    }
+  `;
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
     const programInfo = {
       program: shaderProgram,
       attribLocations: {
         vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-        textureCoord: gl.getAttribLocation(shaderProgram, "aTextureCoord"),
+        vertexColor: gl.getAttribLocation(shaderProgram, "aVertexColor"),
       },
       uniformLocations: {
-        projectionMatrix: gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
+        projectionMatrix: gl.getUniformLocation(
+          shaderProgram,
+          "uProjectionMatrix"
+        ),
         modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
-        uSampler: gl.getUniformLocation(shaderProgram, "uSampler"),
       },
     };
 
     const buffers = initBuffers(gl);
     // Load texture
-    // const texture = loadTexture(gl, "static/ystem.png");
-    const texture = loadTexture(gl, "https://yingyan797.github.io/no-backend/static/rect-satellite-texture.png");
+    // const texture = loadTexture(gl, "https://yingyan797.github.io/no-backend/static/rect-satellite-texture.png");
     // Flip image pixels into the bottom-to-top order that WebGL expects.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    drawScene(gl, programInfo, buffers, texture);
+    drawScene(gl, programInfo, buffers);
 }
 
 function loadTexture(gl, url) {
@@ -109,7 +112,7 @@ function loadTexture(gl, url) {
   const border = 0;
   const srcFormat = gl.RGBA;
   const srcType = gl.UNSIGNED_BYTE;
-  const pixel = new Uint8Array([0, 100, 200, 125]); // opaque blue
+  const pixel = new Uint8Array([0, 0, 255, 255]); // opaque blue
   gl.texImage2D(
     gl.TEXTURE_2D,
     level,
@@ -119,26 +122,24 @@ function loadTexture(gl, url) {
     border,
     srcFormat,
     srcType,
-    pixel,
+    pixel
   );
+
   const image = new Image();
-  image.addEventListener("load", () => {
+  image.crossOrigin = "anonymous"
+  image.onload = () => {
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    try {
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        level,
-        internalFormat,
-        srcFormat,
-        srcType,
-        image,
-      );
-    } catch (err) {
-        alert(err);
-      }
-    
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      level,
+      internalFormat,
+      srcFormat,
+      srcType,
+      image
+    );
+
     // WebGL1 has different requirements for power of 2 images
-    // vs. non power of 2 images so check if the image is a
+    // vs non power of 2 images so check if the image is a
     // power of 2 in both dimensions.
     if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
       // Yes, it's a power of 2. Generate mips.
@@ -150,7 +151,7 @@ function loadTexture(gl, url) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
-  });
+  };
   image.src = url;
   return texture;
 }
@@ -161,15 +162,15 @@ function isPowerOf2(value) {
 
 // init buffer
 function initBuffers(gl) {
-    const positionBuffer = initPositionBuffer(gl);
-    const textureCoordBuffer = initTextureBuffer(gl);
-    const indexBuffer = initIndexBuffer(gl);
+  const positionBuffer = initPositionBuffer(gl);
+  const colorBuffer = initColorBuffer(gl);
+  const indexBuffer = initIndexBuffer(gl);
 
-    return {
-      position: positionBuffer,
-      textureCoord: textureCoordBuffer,
-      indices: indexBuffer,
-    };
+  return {
+    position: positionBuffer,
+    color: colorBuffer,
+    indices: indexBuffer,
+  };
 }
   
 function initPositionBuffer(gl) {
@@ -192,11 +193,9 @@ function initPositionBuffer(gl) {
 }
 
 function initColorBuffer(gl) {
-  const colors = [];
-
   const colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vert_colors), gl.STATIC_DRAW);
 
   return colorBuffer;
 }
@@ -209,7 +208,6 @@ function initTextureBuffer(gl) {
     new Float32Array(textureCoordinates),
     gl.STATIC_DRAW,
   );
-
   return textureCoordBuffer;
 }
 
@@ -232,7 +230,7 @@ function initIndexBuffer(gl) {
 }
 
 // draw scene
-function drawScene(gl, programInfo, buffers, texture) {
+function drawScene(gl, programInfo, buffers) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
     gl.clearDepth(1.0); // Clear everything
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -274,7 +272,7 @@ function drawScene(gl, programInfo, buffers, texture) {
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
     setPositionAttribute(gl, buffers, programInfo);
-    setTextureAttribute(gl, buffers, programInfo);
+    setColorAttribute(gl, buffers, programInfo);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
     // Tell WebGL to use our program when drawing
@@ -291,11 +289,11 @@ function drawScene(gl, programInfo, buffers, texture) {
       false,
       modelViewMatrix,
     );
-    // Tell WebGL we want to affect texture unit 0
-    gl.activeTexture(gl.TEXTURE0);
+    // // Tell WebGL we want to affect texture unit 0
+    // gl.activeTexture(gl.TEXTURE0);
 
-    // Bind the texture to texture unit 0
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    // // Bind the texture to texture unit 0
+    // gl.bindTexture(gl.TEXTURE_2D, texture);
 
     // Tell the shader we bound the texture to texture unit 0
     gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
