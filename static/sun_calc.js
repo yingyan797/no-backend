@@ -443,8 +443,9 @@ function traj_date() {
 function view_earth() {
     const lon = document.getElementById("lon_shad").value;
     const lat = document.getElementById("lat_shad").value;
+    const r = document.getElementById("radius_shad").value;
     const time = time_display(document.getElementById("time_shad").value)
-    document.getElementById("info_shad").innerText = "Camera position (lon: " + lon + ", lat: "+ lat + ")\n\
+    document.getElementById("info_shad").innerText = "Camera position (lon: " + lon + ", lat: "+ lat + ", alt: "+parseInt(6371*(r-1))+"km)\n\
         Time (GMT+0): "+time;
     graph();
 }

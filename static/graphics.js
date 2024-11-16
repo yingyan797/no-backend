@@ -233,7 +233,7 @@ function initIndexBuffer(gl) {
 
 class Camera {
   constructor() {
-    this.distance = 5;
+    this.distance = document.getElementById("radius_shad").value;
     this.position = vec3.fromValues(0, 0, 5);
     // Initial target position (looking down negative z-axis)
     this.target = vec3.fromValues(0, 0, 0);

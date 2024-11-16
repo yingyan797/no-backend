@@ -199,11 +199,12 @@
     - The 4 connections to the center represent midnight, sunrise, noon, sunset respectively. </textarea></td></tr> </table>
         <h3 style="color: blueviolet;">2. View sunlight-shaded earth in space</h3>
         <table><tr><td colspan="2"><textarea readonly id="info_shad" style="width: 100%; height: 30px; background-color: lightgoldenrodyellow;"></textarea></td></tr>
-            <tr><th>Set Date: <input type="date" id="date_shad" value="2024-10-15" oninput="process_form('shad')"></th>
-                <td rowspan="5"> <canvas id="earth_shad" style="width: 500px; height: 500px;"></canvas></td></tr>
+            <tr><th style="background-color: lightgoldenrodyellow;">Set Date: <input type="date" id="date_shad" value="2024-10-15" oninput="process_form('shad')"></th>
+                <td rowspan="6"> <canvas id="earth_shad" style="width: 500px; height: 500px;"></canvas></td></tr>
             <tr><th>Adjust time of the day: <input type="range" id="time_shad" min="0" max="86400" step="300" value="0" oninput="process_form('shad')"></th></tr>
             <tr><th>Adjust camera Longitude: <input type="range" id="lon_shad" min="-180" max="180" step="1" value="90" oninput="process_form('shad')"></th> 
             <tr><th>Adjust camera Latitude: <input type="range" id="lat_shad" min="-90" max="90" step="1" value="0" oninput="process_form('shad')"></th></tr>
+            <tr><th>Adjust camera Altitude: <input type="range" id="radius_shad" min="2" max="10" step="0.2" value="5" oninput="process_form('shad')"></th></tr>
             <tr><td><button onclick="process_form('shad')">Click to view our earth from space</button><br>
                 <textarea style="height: 50px;" readonly>3D graphics displayed on the right hand side >>></textarea></td></tr></table>
         </div> 
