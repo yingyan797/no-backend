@@ -72,6 +72,8 @@ function graph() {
       gl_FragColor = vColor;
     }
   `;
+  const camera = new Camera();
+  camera.moveTo(document.getElementById("lon_shad").value, document.getElementById("lat_shad").value);
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
     const programInfo = {
       program: shaderProgram,
@@ -93,7 +95,7 @@ function graph() {
     // const texture = loadTexture(gl, "https://yingyan797.github.io/no-backend/static/rect-satellite-texture.png");
     // Flip image pixels into the bottom-to-top order that WebGL expects.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    drawScene(gl, programInfo, buffers);
+    drawScene(gl, programInfo, buffers, camera);
 }
 
 function loadTexture(gl, url) {
@@ -229,8 +231,43 @@ function initIndexBuffer(gl) {
   return indexBuffer;
 }
 
+class Camera {
+  constructor() {
+    this.distance = 5;
+    this.position = vec3.fromValues(0, 0, 5);
+    // Initial target position (looking down negative z-axis)
+    this.target = vec3.fromValues(0, 0, 0);
+    // Up vector
+    this.up = vec3.fromValues(0, 0, 1);
+    // View matrix
+    this.viewMatrix = mat4.create();
+    this.updateViewMatrix();
+  }
+
+  updateViewMatrix() {
+    mat4.lookAt(this.viewMatrix, this.position, this.target, this.up);
+  }
+
+  // Move camera to new position while looking at origin
+  moveTo(longitude, latitude) {
+      const lon = longitude * Math.PI / 180;
+      const lat = latitude * Math.PI / 180;
+      
+      // Calculate Cartesian coordinates
+      const x = this.distance * Math.cos(lat) * Math.cos(lon);
+      const y = this.distance * Math.cos(lat) * Math.sin(lon);
+      const z = this.distance * Math.sin(lat);
+      
+      // Set new position
+      vec3.set(this.position, x, y, z);
+      // Set target to origin (0,0,0)
+      vec3.set(this.target, 0, 0, 0);
+      this.updateViewMatrix();
+  }
+}
+
 // draw scene
-function drawScene(gl, programInfo, buffers) {
+function drawScene(gl, programInfo, buffers, cam) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
     gl.clearDepth(1.0); // Clear everything
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -260,14 +297,7 @@ function drawScene(gl, programInfo, buffers) {
     // Set the drawing position to the "identity" point, which is
     // the center of the scene.
     const modelViewMatrix = mat4.create();
-  
-    // Now move the drawing position a bit to where we want to
-    // start drawing the square.
-    mat4.translate(
-      modelViewMatrix, // destination matrix
-      modelViewMatrix, // matrix to translate
-      [-0.0, 0.0, -6.0],
-    ); // amount to translate
+    mat4.multiply(modelViewMatrix, cam.viewMatrix, modelViewMatrix);
   
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.

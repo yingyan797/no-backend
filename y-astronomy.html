@@ -192,7 +192,7 @@
             <tr><th>Latitude: <input type="number" id="lat_vis" min="-90" max="90" step="0.01" value="40"></th></tr>
             <tr><th>Time zone: <input type="number" id="tz_vis" min="-12" max="12" value="8"></th> </tr>
             <tr><th>Date: <input type="date" id="date_vis" value="2024-10-15"></th></tr><tr>
-                <td><button onclick="process_form('traj')">View sun trajectory</button><br>
+                <td><button onclick="process_form('traj')">Click to view sun trajectory</button><br>
             <textarea style="height: 170px;" readonly>3D Solar trajectory displayed on the right hand side >>>
     - [Red] segment represents daylight when Sun is above horizon, and 
     - [Black] represents night when sun is below horizon. 
@@ -200,11 +200,11 @@
         <h3 style="color: blueviolet;">2. View sunlight-shaded earth in space</h3>
         <table><tr><td colspan="2"><textarea readonly id="info_shad" style="width: 100%; height: 30px; background-color: lightgoldenrodyellow;"></textarea></td></tr>
             <tr><th>Set Date: <input type="date" id="date_shad" value="2024-10-15" oninput="process_form('shad')"></th>
-                <td rowspan="5"> <canvas id="earth_shad" style="width: 450px; height: 350px;"></canvas></td></tr>
+                <td rowspan="5"> <canvas id="earth_shad" style="width: 500px; height: 500px;"></canvas></td></tr>
             <tr><th>Adjust time of the day: <input type="range" id="time_shad" min="0" max="86400" step="300" value="0" oninput="process_form('shad')"></th></tr>
             <tr><th>Adjust camera Longitude: <input type="range" id="lon_shad" min="-180" max="180" step="1" value="90" oninput="process_form('shad')"></th> 
-            <tr><th>Adjust camera Latitude: <input type="range" id="lat_shad" min="-90" max="90" step="0.01" value="0" oninput="process_form('shad')"></th></tr>
-            <tr><td><button onclick="process_form('shad')">Look at our earth from space</button><br>
+            <tr><th>Adjust camera Latitude: <input type="range" id="lat_shad" min="-90" max="90" step="1" value="0" oninput="process_form('shad')"></th></tr>
+            <tr><td><button onclick="process_form('shad')">Click to view our earth from space</button><br>
                 <textarea style="height: 50px;" readonly>3D graphics displayed on the right hand side >>></textarea></td></tr></table>
         </div> 
     <script type="text/javascript" src="static/sun_calc.js"></script>

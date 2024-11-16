@@ -3,7 +3,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from icosphere import icosphere
 
-def create_icosphere(subdivisions=17):
+def create_icosphere(subdivisions=22):
     vertices, indices = icosphere(subdivisions)
     imarr = np.array(Image.open("static/rect-satellite-texture.png"))[::-1, :]/255
     texture = np.apply_along_axis(
