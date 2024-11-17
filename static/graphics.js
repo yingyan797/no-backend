@@ -73,10 +73,12 @@ function graph() {
       // float diffuseFactor = max(dot(normal, lightDir), 0.0);
       float diffuseFactor = dot(normal, lightDir);
 
-      if (diffuseFactor < 0.0) {
+      if (diffuseFactor < -0.1) {
         diffuseFactor = 0.0;
-      } else if (diffuseFactor < 0.3) {
-        diffuseFactor += 0.7;
+      } else if (diffuseFactor < 0.0) {
+        diffuseFactor += 0.1;
+      } else if (diffuseFactor < 0.5) {
+        diffuseFactor += 0.5;
       } else {
         diffuseFactor = 1.0;
       }
@@ -84,6 +86,11 @@ function graph() {
       vec3 viewDir = normalize(-vec3(uModelViewMatrix * aVertexPosition));
       vec3 reflectDir = reflect(-lightDir, normal);
       float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
+      if (aVertexColor.b < 1.5*aVertexColor.r || aVertexColor.b < 1.2*aVertexColor.g) {
+        specularFactor /= 3.0;
+      } else if (abs(1.0-aVertexColor.r/aVertexColor.g) < 0.9 && aVertexColor.r+aVertexColor.g > 4.0*aVertexColor.b) {
+        specularFactor /= 2.0;
+      } 
       
       vec3 ambient = uAmbientColor * vec3(aVertexColor);
       vec3 diffuse = uDiffuseColor * vec3(aVertexColor) * diffuseFactor;

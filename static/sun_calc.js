@@ -167,6 +167,7 @@ function hide_show(sec_id) {
     hide_show("visual3d");
     if (document.getElementById("mode").innerText === "3D Visualization page >>") {
         document.getElementById("mode").innerText = "<< Back to sun calculator";
+        view_earth();
     } else {
         document.getElementById("mode").innerText = "3D Visualization page >>";
     }
