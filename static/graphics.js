@@ -77,8 +77,8 @@ function graph() {
         diffuseFactor = 0.0;
       } else if (diffuseFactor < 0.0) {
         diffuseFactor += 0.1;
-      } else if (diffuseFactor < 0.5) {
-        diffuseFactor += 0.5;
+      } else if (diffuseFactor < 0.4) {
+        diffuseFactor += 0.6;
       } else {
         diffuseFactor = 1.0;
       }
