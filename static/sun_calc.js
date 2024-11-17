@@ -440,6 +440,11 @@ function traj_date() {
     }
 }
 
+function shad_setdate(num) {
+    document.getElementById("date_shad").stepUp(num);
+    view_earth();
+}
+
 function view_earth() {
     const lon = document.getElementById("lon_shad").value;
     const lat = document.getElementById("lat_shad").value;

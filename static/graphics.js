@@ -48,18 +48,48 @@ function graph() {
         return;
     }
 
-    const vsSource = `
+  const vsSource = `
     attribute vec4 aVertexPosition;
+    attribute vec3 aVertexNormal;
     attribute vec4 aVertexColor;
 
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
+    uniform mat4 uNormalMatrix;
+    uniform vec3 uLightDirection;
+    uniform vec3 uAmbientColor;
+    uniform vec3 uDiffuseColor;
+    uniform vec3 uSpecularColor;
+    uniform float uShininess;
 
     varying lowp vec4 vColor;
 
     void main(void) {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-      vColor = aVertexColor;
+      vec3 normal = normalize(vec3(uNormalMatrix * vec4(aVertexNormal, 0.0)));
+      
+      vec3 lightDir = normalize(mat3(uModelViewMatrix) * uLightDirection);
+      
+      // float diffuseFactor = max(dot(normal, lightDir), 0.0);
+      float diffuseFactor = dot(normal, lightDir);
+
+      if (diffuseFactor < 0.0) {
+        diffuseFactor = 0.0;
+      } else if (diffuseFactor < 0.3) {
+        diffuseFactor += 0.7;
+      } else {
+        diffuseFactor = 1.0;
+      }
+      
+      vec3 viewDir = normalize(-vec3(uModelViewMatrix * aVertexPosition));
+      vec3 reflectDir = reflect(-lightDir, normal);
+      float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
+      
+      vec3 ambient = uAmbientColor * vec3(aVertexColor);
+      vec3 diffuse = uDiffuseColor * vec3(aVertexColor) * diffuseFactor;
+      vec3 specular = uSpecularColor * specularFactor;
+      
+      vColor = vec4(ambient + diffuse + specular, aVertexColor.a);
     }
   `;
 
@@ -73,13 +103,16 @@ function graph() {
     }
   `;
   const camera = new Camera();
+  const light = new LightSource([1.0, 1.0, 1.0]);
+  light.updateDirection(new Date(document.getElementById("date_shad").value), document.getElementById("time_shad").value);
   camera.moveTo(document.getElementById("lon_shad").value, document.getElementById("lat_shad").value);
-    const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-    const programInfo = {
+  const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+  const programInfo = {
       program: shaderProgram,
       attribLocations: {
         vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
         vertexColor: gl.getAttribLocation(shaderProgram, "aVertexColor"),
+        vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
       },
       uniformLocations: {
         projectionMatrix: gl.getUniformLocation(
@@ -87,6 +120,12 @@ function graph() {
           "uProjectionMatrix"
         ),
         modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
+        normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
+        lightDirection: gl.getUniformLocation(shaderProgram, 'uLightDirection'),
+        ambientColor: gl.getUniformLocation(shaderProgram, 'uAmbientColor'),
+        diffuseColor: gl.getUniformLocation(shaderProgram, 'uDiffuseColor'),
+        specularColor: gl.getUniformLocation(shaderProgram, 'uSpecularColor'),
+        shininess: gl.getUniformLocation(shaderProgram, 'uShininess'),
       },
     };
 
@@ -94,8 +133,8 @@ function graph() {
     // Load texture
     // const texture = loadTexture(gl, "https://yingyan797.github.io/no-backend/static/rect-satellite-texture.png");
     // Flip image pixels into the bottom-to-top order that WebGL expects.
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    drawScene(gl, programInfo, buffers, camera);
+    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    drawScene(gl, programInfo, buffers, camera, light);
 }
 
 function loadTexture(gl, url) {
@@ -167,11 +206,13 @@ function initBuffers(gl) {
   const positionBuffer = initPositionBuffer(gl);
   const colorBuffer = initColorBuffer(gl);
   const indexBuffer = initIndexBuffer(gl);
+  const normalBuffer = initNormalBuffer(gl);
 
   return {
     position: positionBuffer,
     color: colorBuffer,
     indices: indexBuffer,
+    normal: normalBuffer
   };
 }
   
@@ -192,6 +233,13 @@ function initPositionBuffer(gl) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(earth_vertices), gl.STATIC_DRAW);
   
     return positionBuffer;
+}
+
+function initNormalBuffer(gl) {
+  const normalBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(earth_vertices), gl.STATIC_DRAW);
+  return normalBuffer;
 }
 
 function initColorBuffer(gl) {
@@ -266,8 +314,30 @@ class Camera {
   }
 }
 
+class LightSource {
+  constructor(direction) {
+      this.direction = vec3.normalize(vec3.create(), direction);
+      this.ambientColor = vec3.fromValues(0.25, 0.25, 0.25);  // Low intensity white
+      this.diffuseColor = vec3.fromValues(1.0, 1.0, 1.0);  // White
+      this.specularColor = vec3.fromValues(0.5, 0.45, 0.3); // White
+      this.shininess = 16.0;  // Material shininess
+  }
+
+  updateDirection(date, secs) {
+    const sinlat0 = sun_direct_lat_sin(date);
+    const proj = sin_to_cos(sinlat0);
+    const dlon = Math.PI * (1-2*secs/86400);
+    const i = proj*Math.cos(dlon);
+    const j =  proj*Math.sin(dlon);
+    const k = sinlat0;
+      vec3.set(this.direction, i, j, k);
+      vec3.normalize(this.direction, this.direction);
+  }
+}
+
+
 // draw scene
-function drawScene(gl, programInfo, buffers, cam) {
+function drawScene(gl, programInfo, buffers, camera, light) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
     gl.clearDepth(1.0); // Clear everything
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -286,7 +356,7 @@ function drawScene(gl, programInfo, buffers, cam) {
   
     const fieldOfView = (25 * Math.PI) / 180; // in radians
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    const zNear = 0.1;
+    const zNear = 0.7;
     const zFar = 10.0;
     const projectionMatrix = mat4.create();
   
@@ -297,7 +367,24 @@ function drawScene(gl, programInfo, buffers, cam) {
     // Set the drawing position to the "identity" point, which is
     // the center of the scene.
     const modelViewMatrix = mat4.create();
-    mat4.multiply(modelViewMatrix, cam.viewMatrix, modelViewMatrix);
+    mat4.multiply(modelViewMatrix, camera.viewMatrix, modelViewMatrix);
+    // Tell WebGL to use our program when drawing
+    gl.useProgram(programInfo.program);
+
+     // Calculate normal matrix
+    const normalMatrix = mat4.create();
+    mat4.invert(normalMatrix, modelViewMatrix);
+    mat4.transpose(normalMatrix, normalMatrix);
+    // Set shader uniforms
+    gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
+    gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+    gl.uniformMatrix4fv(programInfo.uniformLocations.normalMatrix, false, normalMatrix);
+    // Set lighting uniforms
+    gl.uniform3fv(programInfo.uniformLocations.lightDirection, light.direction);
+    gl.uniform3fv(programInfo.uniformLocations.ambientColor, light.ambientColor);
+    gl.uniform3fv(programInfo.uniformLocations.diffuseColor, light.diffuseColor);
+    gl.uniform3fv(programInfo.uniformLocations.specularColor, light.specularColor);
+    gl.uniform1f(programInfo.uniformLocations.shininess, light.shininess);
   
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
@@ -305,8 +392,6 @@ function drawScene(gl, programInfo, buffers, cam) {
     setColorAttribute(gl, buffers, programInfo);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
-    // Tell WebGL to use our program when drawing
-    gl.useProgram(programInfo.program);
   
     // Set the shader uniforms
     gl.uniformMatrix4fv(
@@ -326,7 +411,7 @@ function drawScene(gl, programInfo, buffers, cam) {
     // gl.bindTexture(gl.TEXTURE_2D, texture);
 
     // Tell the shader we bound the texture to texture unit 0
-    gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+    // gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
   
     {
       const vertexCount = earth_indices.length;
@@ -355,6 +440,15 @@ function setPositionAttribute(gl, buffers, programInfo) {
       offset,
     );
     gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+    gl.vertexAttribPointer(
+        programInfo.attribLocations.vertexNormal,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset,);
+    gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
 }
 
 function setColorAttribute(gl, buffers, programInfo) {
