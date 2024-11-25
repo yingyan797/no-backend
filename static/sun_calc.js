@@ -453,7 +453,80 @@ function view_earth() {
     const time = time_display(document.getElementById("time_shad").value)
     document.getElementById("info_shad").innerText = "Camera position (lon: " + lon + ", lat: "+ lat + ", alt: "+parseInt(6371*(r-1))+"km)\n\
         Time (GMT+0): "+time;
-    graph();
+    
+    const vsSource = `
+        attribute vec4 aVertexPosition;
+        attribute vec3 aVertexNormal;
+        attribute vec4 aVertexColor;
+    
+        uniform mat4 uModelViewMatrix;
+        uniform mat4 uProjectionMatrix;
+        uniform mat4 uNormalMatrix;
+        uniform vec3 uLightDirection;
+        uniform vec3 uAmbientColor;
+        uniform vec3 uDiffuseColor;
+        uniform vec3 uSpecularColor;
+        uniform float uShininess;
+    
+        varying lowp vec4 vColor;
+    
+        void main(void) {
+          gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+          vec3 normal = normalize(vec3(uNormalMatrix * vec4(aVertexNormal, 0.0)));
+          
+          vec3 lightDir = normalize(mat3(uModelViewMatrix) * uLightDirection);
+          
+          // float diffuseFactor = max(dot(normal, lightDir), 0.0);
+          float diffuseFactor = dot(normal, lightDir);
+    
+          if (diffuseFactor < -0.1) {
+            diffuseFactor = 0.0;
+          } else if (diffuseFactor < 0.0) {
+            diffuseFactor += 0.1;
+          } else if (diffuseFactor < 0.4) {
+            diffuseFactor += 0.6;
+          } else {
+            diffuseFactor = 1.0;
+          }
+          
+          vec3 viewDir = normalize(-vec3(uModelViewMatrix * aVertexPosition));
+          vec3 reflectDir = reflect(-lightDir, normal);
+          float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
+          if (aVertexColor.b < 1.5*aVertexColor.r || aVertexColor.b < 1.2*aVertexColor.g) {
+            specularFactor /= 3.0;
+          } else if (abs(1.0-aVertexColor.r/aVertexColor.g) < 0.9 && aVertexColor.r+aVertexColor.g > 4.0*aVertexColor.b) {
+            specularFactor /= 2.0;
+          } 
+          
+          vec3 ambient = uAmbientColor * vec3(aVertexColor);
+          vec3 diffuse = uDiffuseColor * vec3(aVertexColor) * diffuseFactor;
+          vec3 specular = uSpecularColor * specularFactor;
+          
+          vColor = vec4(ambient + diffuse + specular, aVertexColor.a);
+        }
+      `;
+    
+      // Fragment shader program
+    
+      const fsSource = `
+        varying lowp vec4 vColor;
+    
+        void main(void) {
+          gl_FragColor = vColor;
+        }
+      `;
+    const camera = new Camera(0,0,0);
+    const sinlat0 = sun_direct_lat_sin(new Date(document.getElementById("date_shad").value));
+    const proj = sin_to_cos(sinlat0);
+    const dlon = Math.PI * (1-2*document.getElementById("time_shad").value/86400);
+    const light = new LightSource(proj*Math.cos(dlon),  proj*Math.sin(dlon), sinlat0);
+    camera.moveTo(document.getElementById("lon_shad").value, document.getElementById("lat_shad").value, document.getElementById("radius_shad").value);
+    render("#earth_shad", vsSource, fsSource, camera, light, {
+        vertices: earth_vertices,
+        colors: vert_colors,
+        normals: earth_vertices, 
+        indices: earth_indices
+    });
 }
 
   
