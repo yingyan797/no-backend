@@ -372,12 +372,16 @@ function traj_date() {
     const lon = document.getElementById("lon_vis").value;
     const lat = deg_to_rad(document.getElementById("lat_vis").value);
     const tz = document.getElementById("tz_vis").value;
-    const date = document.getElementById("date_vis").value;
     const noon_rate = 2*Math.PI/288;
     let noon_shift = - noon_rate * 144;
     let time = Math.round(noon_seconds(tz, lon) - 43200);
-
-    const sinlat0 = sun_direct_lat_sin(new Date(date));
+    let sinlat0 = 0;
+    if (document.getElementById("sdr_date").checked) {
+        const date = document.getElementById("date_vis").value;
+        sinlat0 = sun_direct_lat_sin(new Date(date));
+    } else {
+        sinlat0 = Math.sin(deg_to_rad(document.getElementById("sunlat_vis").value));
+    }
     let c = 'black';
     const xs = [0];
     const ys = [0];

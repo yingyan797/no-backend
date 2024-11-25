@@ -191,7 +191,9 @@
             <td rowspan="5"><div id="vis_traj"></div></td></tr>
             <tr><th>Latitude: <input type="number" id="lat_vis" min="-90" max="90" step="0.01" value="40"></th></tr>
             <tr><th>Time zone: <input type="number" id="tz_vis" min="-12" max="12" value="8"></th> </tr>
-            <tr><th>Date: <input type="date" id="date_vis" value="2024-10-15"></th></tr><tr>
+            <tr><th><input type="radio" name="sundirect_mode" checked id="sdr_date"> Date: <input type="date" id="date_vis" value="2024-10-15"> Or
+                <input type="radio" name="sundirect_mode" id="sdr_date"> Sun latitude: <input type="number" id="sunlat_vis" min="-90" max="90" step="0.01" value="40"></th>
+            </tr><tr>
                 <td><button onclick="process_form('traj')">Click to view sun trajectory</button><br>
             <textarea style="height: 170px;" readonly>3D Solar trajectory displayed on the right hand side >>>
     - [Red] segment represents daylight when Sun is above horizon, and 
