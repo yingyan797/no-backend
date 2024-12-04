@@ -448,12 +448,21 @@ function traj_date() {
 function shad_setdate(num) {
     document.getElementById("date_shad").stepUp(num);
     view_earth();
+} function shad_upright() {
+    document.getElementById("up_shad").value = 0;
+    view_earth();
 }
 
 function view_earth() {
     const lon = document.getElementById("lon_shad").value;
     const lat = document.getElementById("lat_shad").value;
     const r = document.getElementById("radius_shad").value;
+    if (document.getElementById("up_shad").value >= 0) {
+        document.getElementById("cam_rot").innerText = "+"+document.getElementById("up_shad").value;
+    } else {
+        document.getElementById("cam_rot").innerText = document.getElementById("up_shad").value;
+    }
+    const cam_rot = deg_to_rad(document.getElementById("up_shad").value);
     const time = time_display(document.getElementById("time_shad").value)
     document.getElementById("info_shad").innerText = "Camera position (lon: " + lon + ", lat: "+ lat + ", alt: "+parseInt(6371*(r-1))+"km)\n\
         Time (GMT+0): "+time;
@@ -486,11 +495,11 @@ function view_earth() {
           if (diffuseFactor < -0.1) {
             diffuseFactor = 0.0;
           } else if (diffuseFactor < 0.0) {
-            diffuseFactor += 0.1;
+            diffuseFactor += 0.2;
           } else if (diffuseFactor < 0.4) {
-            diffuseFactor += 0.6;
+            diffuseFactor += 1.0;
           } else {
-            diffuseFactor = 1.0;
+            diffuseFactor = 1.4;
           }
           
           vec3 viewDir = normalize(-vec3(uModelViewMatrix * aVertexPosition));
@@ -519,7 +528,7 @@ function view_earth() {
           gl_FragColor = vColor;
         }
       `;
-    const camera = new Camera(0,0,0);
+    const camera = new Camera(0,0,0, Math.sin(cam_rot), 0,Math.cos(cam_rot));
     const sinlat0 = sun_direct_lat_sin(new Date(document.getElementById("date_shad").value));
     const proj = sin_to_cos(sinlat0);
     const dlon = Math.PI * (1-2*document.getElementById("time_shad").value/86400);

@@ -222,12 +222,12 @@ function initIndexBuffer(gl, indices) {
 }
 
 class Camera {
-  constructor(tx,ty,tz) {
+  constructor(tx,ty,tz, ux, uy, uz) {
     this.position = vec3.fromValues(0, 0, 5);
     // Initial target position (looking down negative z-axis)
     this.target = vec3.fromValues(tx,ty,tz);
     // Up vector
-    this.up = vec3.fromValues(0, 0, 1);
+    this.up = vec3.fromValues(ux, uy, uz);
     this.viewMatrix = mat4.create();
   }
 

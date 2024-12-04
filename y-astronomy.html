@@ -204,11 +204,14 @@
             <tr><th style="background-color: lightgoldenrodyellow;">Set Date: <button onclick="shad_setdate(-30)">-30</button>|<button onclick="shad_setdate(-1)">-1</button>
                 <input type="date" id="date_shad" value="2024-10-15" oninput="process_form('shad')">
                 <button onclick="shad_setdate(1)">+1</button>|<button onclick="shad_setdate(30)">+30</button></th>
-                <td rowspan="6"> <canvas id="earth_shad" style="width: 500px; height: 450px;"></canvas></td></tr>
-            <tr><th>Adjust time of the day: <input type="range" id="time_shad" min="0" max="86400" step="300" value="0" oninput="process_form('shad')"></th></tr>
-            <tr><th>Adjust camera Longitude: <input type="range" id="lon_shad" min="-180" max="180" step="1" value="90" oninput="process_form('shad')"></th> 
-            <tr><th>Adjust camera Latitude: <input type="range" id="lat_shad" min="-90" max="90" step="1" value="0" oninput="process_form('shad')"></th></tr>
-            <tr><th>Adjust camera Altitude: <input type="range" id="radius_shad" min="3.4" max="11" step="0.2" value="7.2" oninput="process_form('shad')"></th></tr>
+                <td rowspan="7"> <canvas id="earth_shad" style="width: 500px; height: 450px;"></canvas></td></tr>
+            <tr><th style="color: blueviolet;">Adjust time of the day: <input type="range" id="time_shad" min="0" max="86400" step="300" value="0" oninput="process_form('shad')"></th></tr>
+            <tr><th>Camera Longitude: <input type="range" id="lon_shad" min="-180" max="180" step="1" value="90" oninput="process_form('shad')"></th> 
+            <tr><th>Camera Latitude: <input type="range" id="lat_shad" min="-90" max="90" step="1" value="0" oninput="process_form('shad')"></th></tr>
+            <tr><th>Camera Altitude: <input type="range" id="radius_shad" min="3.4" max="11" step="0.2" value="7.2" oninput="process_form('shad')"></th></tr>
+            <tr><th style="color: gray;">Rotate scene <textarea id="cam_rot" style="height: 30px; width: 80px;"></textarea>: 
+                <input type="range" id="up_shad" min="-180" max="180" step="3" value="0" oninput="process_form('shad')">
+                <button onclick="shad_upright(1)">Reset</button></th></tr>
             <tr><td><textarea style="height: 150px;" readonly>3D graphics on the right hand side >>>
     Note, the graphics may not display on portrait with a mobile device. Turn the screen 90 degree to landscape for better view. 
     Adjust the altitude bar to the right if the scene is too close.
