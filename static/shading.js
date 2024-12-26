@@ -222,12 +222,12 @@ function initIndexBuffer(gl, indices) {
 }
 
 class Camera {
-  constructor(tx,ty,tz, ux, uy, uz) {
+  constructor(tx,ty,tz, rot) {
     this.position = vec3.fromValues(0, 0, 5);
     // Initial target position (looking down negative z-axis)
     this.target = vec3.fromValues(tx,ty,tz);
     // Up vector
-    this.up = vec3.fromValues(ux, uy, uz);
+    this.rot = rot;
     this.viewMatrix = mat4.create();
   }
 
@@ -240,9 +240,40 @@ class Camera {
       const x = distance * Math.cos(lat) * Math.cos(lon);
       const y = distance * Math.cos(lat) * Math.sin(lon);
       const z = distance * Math.sin(lat);
-      
-      // Set new position
       vec3.set(this.position, x, y, z);
+      let uz = distance;
+      let ux = 0;
+      let uy = 0;
+      if (latitude != 90 && latitude != -90 && z != 0) {
+        const d2 = distance*distance;
+        const c1 = -d2/z + z;
+        const k2 = d2 / (d2 - z*z + c1*c1);
+        let k = Math.sqrt(k2);
+        if (z > 0) {
+          k = -k;
+        }
+        uz = c1 * k;
+        ux = x * k;
+        uy = y * k;
+        let dl = distance * Math.sin(this.rot);
+        let dy = 0;
+        let dx = Math.sin(distance);
+        const fac = Math.cos(this.rot);
+        if (y != 0) {
+          k = - x / y;
+          dx = Math.sqrt(dl*dl / (1 + k*k));
+          if (this.rot < 0) {
+            dx = -dx;
+          }
+          dy = k * dx;
+        }
+        uz = fac * uz;
+        ux = fac * ux + dx;
+        uy = fac * uy + dy;
+
+      }
+
+      this.up = vec3.fromValues(ux, uy, uz);
       mat4.lookAt(this.viewMatrix, this.position, this.target, this.up);
   }
 }

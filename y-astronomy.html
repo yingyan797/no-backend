@@ -44,6 +44,7 @@
             border-bottom: dashed black;
             padding: 0.5rem 0;
             margin: 1rem 0;
+            cursor: pointer;
         }
 
         .form-group {
@@ -113,7 +114,7 @@
         <button style="font-size: large; color: blueviolet;" onclick="vis_switch()"><b id="mode">3D Visualization page >></b></button></h2>
     <br><div id="calculator" style="display: block;">
         <i style="font-size: larger; background-color: lightgoldenrodyellow;">[ Sun calculator ] -- Select one or more of the functions -- </i>
-        <p class="section-title">1. Sunrise/Sunset time and direction, Daylight hours <input type="checkbox" oninput="hide_show('func_1')"></p>
+        <p class="section-title" onclick="hide_show('func_1')">1. Sunrise/Sunset time and direction, Daylight hours</p>
         <div style="display: none;" id="func_1">
             <table><tr><th>Longitude</th><td><input type="number" id="lon_1" min="-180" max="180" step="0.01" value="120"></td></tr>
                 <tr><th>Latitude</th><td><input type="number" id="lat_1" min="-90" max="90" step="0.01" value="35"></td> </tr>
@@ -126,7 +127,7 @@
                     <th>Daylight</th></tr>
                 <tr style="color: black;"><td id="_1_sr"></td><td id="_1_rd"></td><td id="_1_ss"></td><td id="_1_sd"></td><td id="_1_dl"></td></tr>
             </table></div> 
-        <p class="section-title">2. Sun height and direction at any time of the day <input type="checkbox" oninput="hide_show('func_2')"></p>
+        <p class="section-title" onclick="hide_show('func_2')">2. Sun height and direction at any time of the day</p>
         <div style="display: none;" id="func_2">
             <table><tr><th>Longitude</th><td><input type="number" id="lon_2" min="-180" max="180" step="0.01" value="116"></td> </tr>
                 <tr><th>Latitude</th><td><input type="number" id="lat_2" min="-90" max="90" step="0.01" value="40"></td></tr>
@@ -137,7 +138,7 @@
         Sun height: <b id="_2_sh" style="color: black;"></b>; <br> Direction: <b id="_2_sd" style="color: black;"></b> <br>
                 Sun trajectory of the day: <button type="submit" id="plot_2" value="draw">Draw >></button>
         </div></div> 
-        <p class="section-title">3. Time(s) of the day when Sun reaches a certain height / direction <input type="checkbox" oninput="hide_show('func_3')"></p>
+        <p class="section-title" onclick="hide_show('func_3')">3. Time(s) of the day when Sun reaches a certain height / direction</p>
         <div style="display: none;" id="func_3">
             <table>
                 <tr><th>Longitude</th><td><input type="number" id="lon_3" min="-180" max="180" step="0.01" value="107"></td> </tr>
@@ -151,7 +152,7 @@
             <i id="ctrl_3" style="display: block; color: lightsalmon;">(must choose either height or direction to continue)</i> 
             <div id="res_3" style="display: none;"></div>
         </div>
-        <p class="section-title">4. Dates of the year when Sun appears in a certain position at a given time <input type="checkbox" oninput="hide_show('func_4')"></p>
+        <p class="section-title" onclick="hide_show('func_4')">4. Dates of the year when Sun appears in a certain position at a given time</p>
         <div style="display: none;" id="func_4">
             <table>
                 <tr><th>Longitude</th><td><input type="number" id="lon_4" min="-180" max="180" step="0.01" value="0"></td> </tr>
@@ -173,7 +174,7 @@
         
         </div>
         <br><i style="background-color: lightgoldenrodyellow;">Other calculators</i><br>
-        <p class="section-title">1. The distance between any two locations on Earth <input type="checkbox" oninput="hide_show('func_a1')"></p>
+        <p class="section-title" onclick="hide_show('func_a1')">1. The distance between any two locations on Earth</p>
         <div style="display: none;" id="func_a1"><table>
             <tr><td>Locations</td><th>Longitude</th><th>Latitude</th></tr>
             <tr><th>1</th><td><input type="number" id="lon_a1_1" min="-180" max="180" step="0.01" value="120"></td>
@@ -182,8 +183,8 @@
                 <td><input type="number" id="lat_a1_2" min="-90" max="90" step="0.01" value="45"></td></tr>
         </table>Earth radius (km): <input type="number" id="radius_a1" value="6371" min="0" max="9e10"><br>
         Distance: <button onclick="process_form('a1')">Calculate >></button><br><textarea readonly id="res_a1"></textarea>
-        </div><p class="section-title">2. The distance to an object in the sky observed at a certain angle <input type="checkbox" oninput="hide_show('func_a2')"></p>
-        <p class="section-title">3. Maximum observable distance to horizon standing at a given altitude<input type="checkbox" oninput="hide_show('func_a2')"></p>
+        </div><p class="section-title" onclick="hide_show('func_a2')">2. The distance to an object in the sky observed at a certain angle </p>
+        <p class="section-title" onclick="hide_show('func_s3')">3. Maximum observable distance to horizon standing at a given altitude</p>
     </div>
     <div id="visual3d" style="display: none;">
         <h3 style="color: blueviolet;">1. Draw sun trajectory of a day</h3>

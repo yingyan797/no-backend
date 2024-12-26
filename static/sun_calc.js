@@ -528,7 +528,7 @@ function view_earth() {
           gl_FragColor = vColor;
         }
       `;
-    const camera = new Camera(0,0,0, Math.sin(cam_rot), 0,Math.cos(cam_rot));
+    const camera = new Camera(0,0,0, cam_rot);
     const sinlat0 = sun_direct_lat_sin(new Date(document.getElementById("date_shad").value));
     const proj = sin_to_cos(sinlat0);
     const dlon = Math.PI * (1-2*document.getElementById("time_shad").value/86400);
