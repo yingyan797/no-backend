@@ -207,7 +207,7 @@ function initIndexBuffer(gl, indices) {
   const indexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-  // This array defines each face as two triangles, using the
+  // This array defines each crote as two triangles, using the
   // indices into the vertex array to specify each triangle's
   // position.
   // Now send the element array to GL
@@ -241,36 +241,44 @@ class Camera {
       const y = distance * Math.cos(lat) * Math.sin(lon);
       const z = distance * Math.sin(lat);
       vec3.set(this.position, x, y, z);
-      let uz = distance;
-      let ux = 0;
-      let uy = 0;
-      if (latitude != 90 && latitude != -90 && z != 0) {
-        const d2 = distance*distance;
-        const c1 = -d2/z + z;
-        const k2 = d2 / (d2 - z*z + c1*c1);
-        let k = Math.sqrt(k2);
-        if (z > 0) {
-          k = -k;
-        }
-        uz = c1 * k;
-        ux = x * k;
-        uy = y * k;
-        let dl = distance * Math.sin(this.rot);
-        let dy = 0;
-        let dx = Math.sin(distance);
-        const fac = Math.cos(this.rot);
-        if (y != 0) {
-          k = - x / y;
-          dx = Math.sqrt(dl*dl / (1 + k*k));
-          if (this.rot < 0) {
-            dx = -dx;
+      let uz = 0;
+      let ux = Math.cos(lon+this.rot);
+      let uy = Math.sin(lon+this.rot);
+      const crot = Math.cos(this.rot);
+      const srot = Math.sin(this.rot);
+      if (latitude == 90) {
+        ux = -Math.cos(lon-this.rot);
+        uy = -Math.sin(lon-this.rot);
+      } else if (latitude != -90) {
+        uz = crot;
+        ux = -srot*Math.sin(lon);
+        uy = srot*Math.cos(lon);
+        if (latitude != 0) {
+          const d2 = distance*distance;
+          const c1 = -d2/z + z;
+          const k2 = d2 / (d2 - z*z + c1*c1);
+          let k = Math.sqrt(k2);
+          if (z > 0) {
+            k = -k;
           }
-          dy = k * dx;
+          uz = c1 * k;
+          ux = x * k;
+          uy = y * k;
+          let dl = distance * Math.sin(this.rot);
+          let dy = 0;
+          let dx = Math.sin(this.rot);
+          if (y != 0) {
+            let k = - x / y;
+            dx = Math.sqrt(dl*dl / (1 + k*k));
+            if (this.rot < 0) {
+              dx = -dx;
+            }
+            dy = k * dx;
+          }
+          uz = crot * uz;
+          ux = crot * ux - dx;
+          uy = crot * uy - dy;
         }
-        uz = fac * uz;
-        ux = fac * ux + dx;
-        uy = fac * uy + dy;
-
       }
 
       this.up = vec3.fromValues(ux, uy, uz);
