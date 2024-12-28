@@ -235,11 +235,12 @@ class Camera {
   moveTo(longitude, latitude, distance) {
       const lon = longitude * Math.PI / 180;
       const lat = latitude * Math.PI / 180;
+      const trg = [Math.cos(lat), Math.sin(lat), Math.cos(lon), Math.sin(lon)]
       
       // Calculate Cartesian coordinates
-      const x = distance * Math.cos(lat) * Math.cos(lon);
-      const y = distance * Math.cos(lat) * Math.sin(lon);
-      const z = distance * Math.sin(lat);
+      const x = distance * trg[0] * trg[2];
+      const y = distance * trg[0] * trg[3];
+      const z = distance * trg[1];
       vec3.set(this.position, x, y, z);
       let uz = 0;
       let ux = Math.cos(lon+this.rot);
@@ -251,33 +252,12 @@ class Camera {
         uy = -Math.sin(lon-this.rot);
       } else if (latitude != -90) {
         uz = crot;
-        ux = -srot*Math.sin(lon);
-        uy = srot*Math.cos(lon);
+        ux = -srot * trg[3];
+        uy = srot * trg[2];
         if (latitude != 0) {
-          const d2 = distance*distance;
-          const c1 = -d2/z + z;
-          const k2 = d2 / (d2 - z*z + c1*c1);
-          let k = Math.sqrt(k2);
-          if (z > 0) {
-            k = -k;
-          }
-          uz = c1 * k;
-          ux = x * k;
-          uy = y * k;
-          let dl = distance * Math.sin(this.rot);
-          let dy = 0;
-          let dx = Math.sin(this.rot);
-          if (y != 0) {
-            let k = - x / y;
-            dx = Math.sqrt(dl*dl / (1 + k*k));
-            if (this.rot < 0) {
-              dx = -dx;
-            }
-            dy = k * dx;
-          }
-          uz = crot * uz;
-          ux = crot * ux - dx;
-          uy = crot * uy - dy;
+          uz *= trg[0];
+          ux -= crot * trg[1] * trg[2];
+          uy -= crot * trg[1] * trg[3];
         }
       }
 
