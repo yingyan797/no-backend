@@ -155,46 +155,6 @@ function sun_direct_lat_sin(date) {
     return 43200 + 3600*(15 * tz - lon)/15
 }
 
-// Form processing main functions
-function hide_show(sec_id) {
-    if (document.getElementById(sec_id).style.display == "none") {
-        document.getElementById(sec_id).style.display = "block";
-    } else {
-        document.getElementById(sec_id).style.display = "none";
-    }
-} function vis_switch() {
-    hide_show("calculator");
-    hide_show("visual3d");
-    if (document.getElementById("mode").innerText === "3D Visualization page >>") {
-        document.getElementById("mode").innerText = "<< Back to sun calculator";
-        view_earth();
-    } else {
-        document.getElementById("mode").innerText = "3D Visualization page >>";
-    }
-} function input_ang(aname, num) {
-    const field = "ang_"+num; 
-    document.getElementById("calc_"+num).disabled = false;
-    document.getElementById("ctrl_"+num).style.display = "none";
-    switch (aname) {
-        case "ht":
-            document.getElementById(field).min = -90;
-            document.getElementById(field).max = 90;
-            document.getElementById("ht_lab_"+num).style.color = "blueviolet";
-            document.getElementById("ht_lab_"+num).style.fontSize = "large";
-            document.getElementById("drn_lab_"+num).style.color = "gray";
-            document.getElementById("drn_lab_"+num).style.fontSize = "small";
-            break;
-        case "drn":
-            document.getElementById(field).min = 0;
-            document.getElementById(field).max = 360;
-            document.getElementById("ht_lab_"+num).style.color = "gray";
-            document.getElementById("ht_lab_"+num).style.fontSize = "small";
-            document.getElementById("drn_lab_"+num).style.color = "blueviolet";
-            document.getElementById("drn_lab_"+num).style.fontSize = "large";
-            break;
-    }
-}
-
 function sunrise_set(num) {
     const lon = document.getElementById("lon_"+num).value
     const lat = deg_to_rad(document.getElementById("lat_"+num).value);
@@ -457,15 +417,22 @@ function view_earth() {
     const lon = document.getElementById("lon_shad").value;
     const lat = document.getElementById("lat_shad").value;
     const r = document.getElementById("radius_shad").value;
-    if (document.getElementById("up_shad").value >= 0) {
-        document.getElementById("cam_rot").innerText = "+"+document.getElementById("up_shad").value;
-    } else {
-        document.getElementById("cam_rot").innerText = document.getElementById("up_shad").value;
+    const up = document.getElementById("up_shad").value;
+    document.getElementById("lon_shad_v").innerHTML = value_display(3, "EW", lon);
+    document.getElementById("lat_shad_v").innerHTML = value_display(2, "NS", lat);
+    document.getElementById("radius_shad_v").innerHTML = parseInt(6371*(r-1)) + " km";
+    function value_display(lstd, signs, v) {
+        let pref = "";
+        if (v >= 0) {pref += signs[0];} else {pref += signs[1];}
+        for (i = String(Math.abs(v)).length; i < lstd; i++) {
+            pref += "0";
+        }
+        return pref + Math.abs(v);
     }
+    
+    document.getElementById("up_shad_v").innerHTML = value_display(3, "RL", up);
     const cam_rot = deg_to_rad(document.getElementById("up_shad").value);
-    const time = time_display(document.getElementById("time_shad").value)
-    document.getElementById("info_shad").innerText = "Camera position (lon: " + lon + ", lat: "+ lat + ", alt: "+parseInt(6371*(r-1))+"km)\n\
-        Time (GMT+0): "+time;
+    document.getElementById("time_shad_v").innerText = "GMT "+time_display(document.getElementById("time_shad").value)
     
     const vsSource = `
         attribute vec4 aVertexPosition;

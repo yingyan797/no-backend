@@ -20,31 +20,23 @@
             font-family: 'Lucida Sans', sans-serif;
             padding: 1rem;
         }
-
-        .header {
-            background-color: skyblue;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .header h2 {
-            font-size: 1.25rem;
-            word-wrap: break-word;
-        }
-
-        .header a {
-            color: inherit;
-            text-decoration: none;
-        }
-
+        
         .section-title {
             color: blue;
             font-size: 1.1rem;
             font-weight: 800;
             border-bottom: dashed black;
             padding: 0.5rem 0;
-            margin: 1rem 0;
+            margin-top: 5px;
+            margin-bottom: 2px;
             cursor: pointer;
+        }
+        .clickable {
+            cursor: pointer;
+            background-color: skyblue;
+            border-radius: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
         }
 
         .form-group {
@@ -194,30 +186,77 @@
             <tr><th>Time zone: <input type="number" id="tz_vis" min="-12" max="12" value="8"></th> </tr>
             <tr><th><input type="radio" name="sundirect_mode" checked id="sdr_date"> Date: <input type="date" id="date_vis" value="2024-10-15"> Or
                 <input type="radio" name="sundirect_mode" id="sdr_date"> Sun latitude: <input type="number" id="sunlat_vis" min="-90" max="90" step="0.01" value="40"></th>
-            </tr><tr>
-                <td><button onclick="process_form('traj')">Click to view sun trajectory</button><br>
-            <textarea style="height: 170px;" readonly>3D Solar trajectory displayed on the right hand side >>>
+            </tr><tr><td><button onclick="process_form('traj')">Click to view sun trajectory</button>
+                <b class="clickable" onclick="hide_show('traj_comment')">About plot...</b><br>
+            <textarea id="traj_comment" style="height: 170px; width: 95%; display: none;" readonly>3D Solar trajectory displayed on the right hand side >>>
     - [Red] segment represents daylight when Sun is above horizon, and 
     - [Black] represents night when sun is below horizon. 
     - The 4 connections to the center represent midnight, sunrise, noon, sunset respectively. </textarea></td></tr> </table>
-        <h3 style="color: blueviolet;">2. View sunlight-shaded earth in space</h3>
-        <table><tr><td colspan="2"><textarea readonly id="info_shad" style="width: 100%; height: 70px; background-color: lightgoldenrodyellow;"></textarea></td></tr>
-            <tr><th style="background-color: lightgoldenrodyellow;">Set Date: <button onclick="shad_setdate(-30)">-30</button>|<button onclick="shad_setdate(-1)">-1</button>
+        <h3 style="color: blueviolet;">2. Sunlight-shaded earth view and Moon phase</h3>
+        <table><tr style="background-color: lightgoldenrodyellow;"><th colspan="3">
+            Set Date: <b class="clickable" onclick="shad_setdate(-30)"><30</b>|<b class="clickable" onclick="shad_setdate(-1)"><1</b>
                 <input type="date" id="date_shad" value="2024-10-15" oninput="process_form('shad')">
-                <button onclick="shad_setdate(1)">+1</button>|<button onclick="shad_setdate(30)">+30</button></th>
-                <td rowspan="7"> <canvas id="earth_shad" style="width: 500px; height: 450px;"></canvas></td></tr>
-            <tr><th style="color: blueviolet;">Adjust time of the day: <input type="range" id="time_shad" min="0" max="86400" step="300" value="0" oninput="process_form('shad')"></th></tr>
-            <tr><th>Camera Longitude: <input type="range" id="lon_shad" min="-180" max="180" step="1" value="90" oninput="process_form('shad')"></th> 
-            <tr><th>Camera Latitude: <input type="range" id="lat_shad" min="-90" max="90" step="1" value="0" oninput="process_form('shad')"></th></tr>
-            <tr><th>Camera Altitude: <input type="range" id="radius_shad" min="3.4" max="11" step="0.2" value="7.2" oninput="process_form('shad')"></th></tr>
-            <tr><th style="color: gray;">Rotate scene <textarea id="cam_rot" style="height: 30px; width: 80px;"></textarea>: 
+                <b class="clickable" onclick="shad_setdate(1)">1></b>|<b class="clickable" onclick="shad_setdate(30)">30></b></th>
+                <td rowspan="7">
+                    <div class="clickable" onclick="hide_show('earth_shad')">Earth view (hide/show)</div>
+                    <canvas id="earth_shad" style="width: 350px; height: 300px;"></canvas><br>
+                    <div class="clickable" onclick="hide_show('moon_shad')">Moon phase (hide/show)</div>
+                    <canvas id="moon_shad" style="width: 300px; height: 300px;"></canvas>
+                </td></tr>
+            <tr><th>Adjust time</th><td id="time_shad_v" ></td><td><input type="range" id="time_shad" min="0" max="86400" step="300" value="0" oninput="process_form('shad')"></td></tr>
+            <tr><th>Longitude</th><td id="lon_shad_v"></td><td> <input type="range" id="lon_shad" min="-180" max="180" step="1" value="90" oninput="process_form('shad')"></td> 
+            <tr><th>Latitude</th><td id="lat_shad_v"></td><td><input type="range" id="lat_shad" min="-90" max="90" step="1" value="0" oninput="process_form('shad')"></td></tr>
+            <tr><th>Altitude</th><td id="radius_shad_v"></td><td> <input type="range" id="radius_shad" min="3" max="11" step="0.2" value="6" oninput="process_form('shad')"></td>
+            <tr style="color: gray;"><th>Rotate scene</th> <td><i id="up_shad_v"></i>
+                <b class="clickable" onclick="shad_upright(1)">Reset</b></td><td>
                 <input type="range" id="up_shad" min="-180" max="180" step="3" value="0" oninput="process_form('shad')">
-                <button onclick="shad_upright(1)">Reset</button></th></tr>
-            <tr><td><textarea style="height: 150px;" readonly>3D graphics on the right hand side >>>
+        </th></tr></td> <tr><td colspan="3"><textarea style="height: 150px;" readonly>3D graphics on the right hand side >>>
     Note, the graphics may not display on portrait with a mobile device. Turn the screen 90 degree to landscape for better view. 
     Adjust the altitude bar to the right if the scene is too close.
             </textarea></td></tr></table>
         <h3 style="color: lightsalmon;">3. Moon phase Real-time rendering</h3>
         </div> 
     <script type="text/javascript" src="static/sun_calc.js"></script>
+    <script>
+        // Form processing main functions
+        function input_ang(aname, num) {
+            const field = "ang_"+num; 
+            document.getElementById("calc_"+num).disabled = false;
+            document.getElementById("ctrl_"+num).style.display = "none";
+            switch (aname) {
+                case "ht":
+                    document.getElementById(field).min = -90;
+                    document.getElementById(field).max = 90;
+                    document.getElementById("ht_lab_"+num).style.color = "blueviolet";
+                    document.getElementById("ht_lab_"+num).style.fontSize = "large";
+                    document.getElementById("drn_lab_"+num).style.color = "gray";
+                    document.getElementById("drn_lab_"+num).style.fontSize = "small";
+                    break;
+                case "drn":
+                    document.getElementById(field).min = 0;
+                    document.getElementById(field).max = 360;
+                    document.getElementById("ht_lab_"+num).style.color = "gray";
+                    document.getElementById("ht_lab_"+num).style.fontSize = "small";
+                    document.getElementById("drn_lab_"+num).style.color = "blueviolet";
+                    document.getElementById("drn_lab_"+num).style.fontSize = "large";
+                    break;
+            }
+        }
+        function hide_show(sec_id) {
+            if (document.getElementById(sec_id).style.display == "none") {
+                document.getElementById(sec_id).style.display = "block";
+            } else {
+                document.getElementById(sec_id).style.display = "none";
+            }
+        } function vis_switch() {
+            hide_show("calculator");
+            hide_show("visual3d");
+            if (document.getElementById("mode").innerText === "3D Visualization page >>") {
+                document.getElementById("mode").innerText = "<< Back to sun calculator";
+                view_earth();
+            } else {
+                document.getElementById("mode").innerText = "3D Visualization page >>";
+            }
+        } 
+    </script>
 </body>
