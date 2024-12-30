@@ -8,7 +8,11 @@ function process_form(num) {
             case 4: sun_date_limit(num); break;
             case "a1": sphere_distance(); break;
             case "traj": traj_date(); break;
-            case "shad": view_earth(); break;
+            case "shad": {
+                view_earth(); 
+                view_moon(); 
+                break;
+            }
         } 
     } catch(err) {
         alert("[Debug message] "+err);
@@ -132,17 +136,24 @@ function time_convert(seconds) {
     ]
     return mnames[m]+" "+d;
 }
-function sun_direct_lat_sin(date) {
+
+function sun_phase(date) {
     const y = date.getFullYear();
     const sprg_eqnx_secs = (date - new Date(y, 2, 21))/1000
     const ydays = (y % 400 === 0 || (y % 100 !== 0 && y % 4 === 0)) ? 366 : 365
-    const phase = 2 * Math.PI * sprg_eqnx_secs / (86400 * ydays);
-    let res = Math.sin(phase) * Math.sin(deg_to_rad(23.5));
-    if (res > 1) {
-        res = 1;
-    }
-    return res;
-} function day_length(pss, lat) {
+    return 2 * Math.PI * sprg_eqnx_secs / (86400 * ydays);
+}
+
+function moon_phase(date) {
+    const y = date.getFullYear();
+    const sprg_eqnx_secs = (date - new Date(y, 2, 21))/1000
+}
+
+function direct_lat_sin(phase, max_tilt) {
+    return Math.min(1, Math.sin(phase)*Math.sin(deg_to_rad(max_tilt)));
+}
+
+function day_length(pss, lat) {
     const sbs = Math.tan(lat) * pss / Math.sqrt(1-pss*pss);
     let day_time_balance = 90;
     if (sbs <= -1) {
@@ -160,7 +171,7 @@ function sunrise_set(num) {
     const lat = deg_to_rad(document.getElementById("lat_"+num).value);
     const tz = document.getElementById("tz_"+num).value;
     const date = new Date(document.getElementById("date_"+num).value)
-    const pss = sun_direct_lat_sin(date);
+    const pss = direct_lat_sin(sun_phase(date), 23.5);
     const dl = day_length(pss, lat);
     const hdl = dl/2;
     const noon = noon_seconds(tz, lon);
@@ -183,7 +194,7 @@ function sun_position(num) {
     const iptime = document.getElementById("time_"+num).value;
     const time = parseInt(iptime.slice(0,2))*3600 + parseInt(iptime.slice(3,5))*60;
     const noon = noon_seconds(tz, lon);
-    const sinlat0 = sun_direct_lat_sin(new Date(date));
+    const sinlat0 = direct_lat_sin(sun_phase(new Date(date)), 23.5);
     const res = sun_geom(sinlat0, lat, [noon, time])
     document.getElementById("res_"+num).style.display = "block";
     const ht = Math.round(100*rad_to_deg(res[1]))/100;
@@ -230,7 +241,7 @@ function _approach_time(sinlat0, lat, noon, calc, low, high, std) {
         let sinlat0 = Math.sin(phase) * axis_sin;
         if (sinlat0 > 1) {
             sinlat0 = 1;
-        } // The value is sun_direct_lat_sin
+        } // The value is direct_lat_sin
         const diff = calc(sinlat0, lat, noon_shift) - std;
         if (i > 0) {
             if (diff * prev_diff <= 0) { // sandwiched
@@ -252,7 +263,7 @@ function sun_time_limit(num) {
     const tz = document.getElementById("tz_"+num).value;
     const date0 = new Date(document.getElementById("date_"+num).value);
     const noon = noon_seconds(tz, lon);
-    const sinlat0 = sun_direct_lat_sin(date0);
+    const sinlat0 = direct_lat_sin(sun_phase(date0), 23.5);
     let degree = document.getElementById("ang_"+num).value;
     const ang = deg_to_rad(degree);
     let res = [];
@@ -338,7 +349,7 @@ function traj_date() {
     let sinlat0 = 0;
     if (document.getElementById("sdr_date").checked) {
         const date = document.getElementById("date_vis").value;
-        sinlat0 = sun_direct_lat_sin(new Date(date));
+        sinlat0 = direct_lat_sin(sun_phase(new Date(date)), 23.5);
     } else {
         sinlat0 = Math.sin(deg_to_rad(document.getElementById("sunlat_vis").value));
     }
@@ -420,7 +431,7 @@ function view_earth() {
     const up = document.getElementById("up_shad").value;
     document.getElementById("lon_shad_v").innerHTML = value_display(3, "EW", lon);
     document.getElementById("lat_shad_v").innerHTML = value_display(2, "NS", lat);
-    document.getElementById("radius_shad_v").innerHTML = parseInt(6371*(r-1)) + " km";
+    document.getElementById("radius_shad_v").innerHTML = r + " * radius";
     function value_display(lstd, signs, v) {
         let pref = "";
         if (v >= 0) {pref += signs[0];} else {pref += signs[1];}
@@ -446,7 +457,6 @@ function view_earth() {
         uniform vec3 uAmbientColor;
         uniform vec3 uDiffuseColor;
         uniform vec3 uSpecularColor;
-        uniform float uShininess;
     
         varying lowp vec4 vColor;
     
@@ -471,7 +481,7 @@ function view_earth() {
           
           vec3 viewDir = normalize(-vec3(uModelViewMatrix * aVertexPosition));
           vec3 reflectDir = reflect(-lightDir, normal);
-          float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), uShininess);
+          float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), 15.0);
           if (aVertexColor.b < 1.5*aVertexColor.r || aVertexColor.b < 1.2*aVertexColor.g) {
             specularFactor /= 3.0;
           } else if (abs(1.0-aVertexColor.r/aVertexColor.g) < 0.9 && aVertexColor.r+aVertexColor.g > 4.0*aVertexColor.b) {
@@ -496,16 +506,106 @@ function view_earth() {
         }
       `;
     const camera = new Camera(0,0,0, cam_rot);
-    const sinlat0 = sun_direct_lat_sin(new Date(document.getElementById("date_shad").value));
+    let date = new Date(document.getElementById("date_shad").value);
+    date.setUTCSeconds(document.getElementById("time_shad").value);
+    const sinlat0 = direct_lat_sin(sun_phase(date), 23.5);
     const proj = sin_to_cos(sinlat0);
     const dlon = Math.PI * (1-2*document.getElementById("time_shad").value/86400);
     const light = new LightSource(proj*Math.cos(dlon),  proj*Math.sin(dlon), sinlat0);
-    camera.moveTo(document.getElementById("lon_shad").value, document.getElementById("lat_shad").value, document.getElementById("radius_shad").value);
+    camera.moveTo(lon, lat, r);
     render("#earth_shad", vsSource, fsSource, camera, light, {
         vertices: earth_vertices,
-        colors: vert_colors,
+        colors: earth_colors,
         normals: earth_vertices, 
         indices: earth_indices
+    });
+}
+
+function shad_setdate(num) {
+    document.getElementById("date_shad").stepUp(num);
+    view_earth();
+} function shad_upright() {
+    document.getElementById("up_shad").value = 0;
+    view_earth();
+}
+
+function view_moon() {
+    const lon = document.getElementById("lon_shad").value;
+    const lat = document.getElementById("lat_shad").value;
+    const r = document.getElementById("radius_shad").value;
+    const vsSource = `
+        attribute vec4 aVertexPosition;
+        attribute vec3 aVertexNormal;
+        attribute vec4 aVertexColor;
+    
+        uniform mat4 uModelViewMatrix;
+        uniform mat4 uProjectionMatrix;
+        uniform mat4 uNormalMatrix;
+        uniform vec3 uLightDirection;
+        uniform vec3 uAmbientColor;
+        uniform vec3 uDiffuseColor;
+        uniform vec3 uSpecularColor;
+    
+        varying lowp vec4 vColor;
+    
+        void main(void) {
+          gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+          vec3 normal = normalize(vec3(uNormalMatrix * vec4(aVertexNormal, 0.0)));
+          
+          vec3 lightDir = normalize(mat3(uModelViewMatrix) * uLightDirection);
+          
+          // float diffuseFactor = max(dot(normal, lightDir), 0.0);
+          float diffuseFactor = dot(normal, lightDir);
+    
+          if (diffuseFactor < -0.1) {
+            diffuseFactor = 0.0;
+          } else if (diffuseFactor < 0.0) {
+            diffuseFactor += 0.1;
+          } else if (diffuseFactor < 0.4) {
+            diffuseFactor += 0.6;
+          } else {
+            diffuseFactor = 1.0;
+          }
+          
+          vec3 viewDir = normalize(-vec3(uModelViewMatrix * aVertexPosition));
+          vec3 reflectDir = reflect(-lightDir, normal);
+          float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), 2.0) / 5.0;
+
+          vec3 ambient = uAmbientColor * vec3(aVertexColor) / 1.5;
+          vec3 diffuse = uDiffuseColor * vec3(aVertexColor) * diffuseFactor;
+          vec3 specular = vec3(1.0, 1.0, 1.0) * specularFactor;
+          
+          vColor = vec4(ambient + diffuse + specular, aVertexColor.a);
+        }
+      `;
+    
+      // Fragment shader program
+    
+      const fsSource = `
+        varying lowp vec4 vColor;
+    
+        void main(void) {
+          gl_FragColor = vColor;
+        }
+      `;
+    let date = new Date(document.getElementById("date_shad").value);
+    date.setUTCSeconds(document.getElementById("time_shad").value);
+    
+    const sinlat0 = direct_lat_sin(sun_phase(date), 23.5);
+    const proj = sin_to_cos(sinlat0);
+    const dlon = Math.PI * (1-2*document.getElementById("time_shad").value/86400);
+    let sun_vec = [proj*Math.cos(dlon),  proj*Math.sin(dlon), sinlat0];
+
+    const light = new LightSource(1.0,1.0,1.0);
+    const camera = new Camera(0,0,0,0);
+    camera.moveTo(lon, lat, r);
+    document.getElementById("moon_shad_info").innerHTML = "Moon height: ; Direction: "
+    
+    render("#moon_shad", vsSource, fsSource, camera, light, {
+        vertices: moon_vertices,
+        colors: moon_colors,
+        normals: moon_vertices, 
+        indices: moon_indices
     });
 }
 

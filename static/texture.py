@@ -3,9 +3,9 @@ from PIL import Image
 from matplotlib import pyplot as plt
 from icosphere import icosphere
 
-def create_icosphere(subdivisions=24):
+def create_icosphere(src="static/rect-satellite-texture.png", subdivisions=24):
     vertices, indices = icosphere(subdivisions)
-    imarr = np.array(Image.open("static/rect-satellite-texture.png"))[::-1, :]/255
+    imarr = np.array(Image.open(src))[::-1, :]/255
     texture = np.apply_along_axis(
         lambda v: _vert_imgcoord(v, imarr.shape[1], imarr.shape[0]), 1, vertices)
     _draw_texture(texture)
@@ -24,19 +24,20 @@ def _draw_texture(texture):
     plt.show()
 
 if __name__ == "__main__":
-    vert, indx, colors = create_icosphere()
-    with open("static/model.js", "w") as f:
+    vert, indx, colors = create_icosphere(src="static/moon-rect.jpg")
+    title = "moon"
+    with open(f"static/{title}_model.js", "w") as f:
         f.write("")
-    with open("static/model.js", "a") as f:
-        f.write("const earth_vertices = [")
+    with open(f"static/{title}_model.js", "a") as f:
+        f.write(f"const {title}_vertices = [")
         for row in vert:
             for c in row:
                 f.write(f"{c},")
-        f.write("];\n\nconst earth_indices = [")
+        f.write(f"];\n\nconst {title}_indices = [")
         for row in indx:
             for c in row:
                 f.write(f"{c},")
-        f.write("];\n\nconst vert_colors = [")
+        f.write(f"];\n\nconst {title}_colors = [")
         for row in colors:
             for c in row:
                 f.write(f"{c},")

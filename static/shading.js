@@ -67,7 +67,6 @@ function render(gname, vsSource, fsSource, camera, light, model) {
         ambientColor: gl.getUniformLocation(shaderProgram, 'uAmbientColor'),
         diffuseColor: gl.getUniformLocation(shaderProgram, 'uDiffuseColor'),
         specularColor: gl.getUniformLocation(shaderProgram, 'uSpecularColor'),
-        shininess: gl.getUniformLocation(shaderProgram, 'uShininess'),
       },
     };
 
@@ -272,7 +271,6 @@ class LightSource {
       this.ambientColor = vec3.fromValues(0.25, 0.25, 0.25);  // Low intensity white
       this.diffuseColor = vec3.fromValues(1.0, 1.0, 1.0);  // White
       this.specularColor = vec3.fromValues(0.5, 0.45, 0.3); // White
-      this.shininess = 16.0;  // Material shininess
       vec3.set(this.direction, i, j, k);
       vec3.normalize(this.direction, this.direction);
   }
@@ -326,7 +324,6 @@ function drawScene(gl, programInfo, buffers, camera, light) {
     gl.uniform3fv(programInfo.uniformLocations.ambientColor, light.ambientColor);
     gl.uniform3fv(programInfo.uniformLocations.diffuseColor, light.diffuseColor);
     gl.uniform3fv(programInfo.uniformLocations.specularColor, light.specularColor);
-    gl.uniform1f(programInfo.uniformLocations.shininess, light.shininess);
   
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.

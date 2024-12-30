@@ -9,6 +9,7 @@
       defer></script>
       <script src="static/shading.js"></script>
       <script src="static/earth_model.js"></script>
+      <script src="static/moon_model.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -201,12 +202,13 @@
                     <div class="clickable" onclick="hide_show('earth_shad')">Earth view (hide/show)</div>
                     <canvas id="earth_shad" style="width: 350px; height: 300px;"></canvas><br>
                     <div class="clickable" onclick="hide_show('moon_shad')">Moon phase (hide/show)</div>
-                    <canvas id="moon_shad" style="width: 300px; height: 300px;"></canvas>
+                    <canvas id="moon_shad" style="width: 350px; height: 270px;"></canvas>
+                    <div id="moon_shad_info" style="width: 350px;" rows="1"></div>
                 </td></tr>
             <tr><th>Adjust time</th><td id="time_shad_v" ></td><td><input type="range" id="time_shad" min="0" max="86400" step="300" value="0" oninput="process_form('shad')"></td></tr>
             <tr><th>Longitude</th><td id="lon_shad_v"></td><td> <input type="range" id="lon_shad" min="-180" max="180" step="1" value="90" oninput="process_form('shad')"></td> 
             <tr><th>Latitude</th><td id="lat_shad_v"></td><td><input type="range" id="lat_shad" min="-90" max="90" step="1" value="0" oninput="process_form('shad')"></td></tr>
-            <tr><th>Altitude</th><td id="radius_shad_v"></td><td> <input type="range" id="radius_shad" min="3" max="11" step="0.2" value="6" oninput="process_form('shad')"></td>
+            <tr><th>Altitude</th><td id="radius_shad_v"></td><td> <input type="range" id="radius_shad" min="3" max="11" step="0.2" value="5.4" oninput="process_form('shad')"></td>
             <tr style="color: gray;"><th>Rotate scene</th> <td><i id="up_shad_v"></i>
                 <b class="clickable" onclick="shad_upright(1)">Reset</b></td><td>
                 <input type="range" id="up_shad" min="-180" max="180" step="3" value="0" oninput="process_form('shad')">
@@ -214,7 +216,6 @@
     Note, the graphics may not display on portrait with a mobile device. Turn the screen 90 degree to landscape for better view. 
     Adjust the altitude bar to the right if the scene is too close.
             </textarea></td></tr></table>
-        <h3 style="color: lightsalmon;">3. Moon phase Real-time rendering</h3>
         </div> 
     <script type="text/javascript" src="static/sun_calc.js"></script>
     <script>
@@ -254,6 +255,7 @@
             if (document.getElementById("mode").innerText === "3D Visualization page >>") {
                 document.getElementById("mode").innerText = "<< Back to sun calculator";
                 view_earth();
+                view_moon();
             } else {
                 document.getElementById("mode").innerText = "3D Visualization page >>";
             }
