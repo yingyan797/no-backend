@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .trading-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-display {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+        }
+
+        .current-price {
+            font-size: 3em;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .price-change {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .bid-ask {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1em;
+        }
+
+        .bid { color: #f44336; }
+        .ask { color: #4CAF50; }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .trade-button {
+            padding: 15px 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .long-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .short-btn {
+            background: linear-gradient(45deg, #f44336, #da190b);
+            color: white;
+        }
+
+        .trade-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .trade-button:active {
+            transform: translateY(0);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1em;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .chart-container {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .market-data {
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .order-book {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+        }
+
+        .order-book h3 {
+            margin-bottom: 10px;
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+        .agent-stats {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+        }
+
+        .agent-stats h3 {
+            margin-bottom: 10px;
+            text-align: center;
+            color: #2196F3;
+        }
+
+        .agent-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 0.9em;
+        }
+
+        .positive { color: #4CAF50; }
+        .negative { color: #f44336; }
+
+        .transaction-log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .transaction-log h3 {
+            margin-bottom: 10px;
+            text-align: center;
+            color: #FF9800;
+        }
+
+        .transaction-item {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9em;
+        }
+
+        .canvas {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .current-price {
+                font-size: 2em;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel trading-panel">
+            <div class="price-display">
+                <div class="current-price" id="currentPrice">$100.00</div>
+                <div class="price-change" id="priceChange">+$0.00 (0.00%)</div>
+                <div class="bid-ask">
+                    <span class="bid">Bid: $<span id="bidPrice">99.95</span></span>
+                    <span class="ask">Ask: $<span id="askPrice">100.05</span></span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="trade-button long-btn" onclick="placeTrade('long')">
+                    Buy Long
+                </button>
+                <button class="trade-button short-btn" onclick="placeTrade('short')">
+                    Sell Short
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label for="tradeAmount">Trade Amount ($)</label>
+                <input type="number" id="tradeAmount" value="1000" min="100" step="100" placeholder="Enter amount">
+            </div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="portfolio">$10,000</div>
+                    <div class="stat-label">Portfolio Value</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="pnl">$0.00</div>
+                    <div class="stat-label">P&L</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="position">0</div>
+                    <div class="stat-label">Position</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="volume">0</div>
+                    <div class="stat-label">Volume</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="priceChart" class="canvas"></canvas>
+            </div>
+        </div>
+
+        <div class="panel market-data">
+            <div class="order-book">
+                <h3>Order Book</h3>
+                <div id="orderBook"></div>
+            </div>
+
+            <div class="agent-stats">
+                <h3>AI Agents (Active: <span id="agentCount">50</span>)</h3>
+                <div id="agentStats"></div>
+            </div>
+
+            <div class="transaction-log">
+                <h3>Recent Transactions</h3>
+                <div id="transactionLog"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TradingSimulator {
+            constructor() {
+                this.currentPrice = 100.00;
+                this.startPrice = 100.00;
+                this.bidPrice = 99.95;
+                this.askPrice = 100.05;
+                this.agents = [];
+                this.orders = { bids: [], asks: [] };
+                this.transactions = [];
+                this.priceHistory = [100];
+                this.portfolio = 10000;
+                this.position = 0;
+                this.totalVolume = 0;
+                this.entryPrice = 0;
+                
+                this.initializeAgents();
+                this.startSimulation();
+                this.setupChart();
+            }
+
+            initializeAgents() {
+                const strategies = [
+                    'momentum', 'reversal', 'random', 'trend_following', 
+                    'mean_reversion', 'arbitrage', 'scalping'
+                ];
+                
+                for (let i = 0; i < 50; i++) {
+                    this.agents.push({
+                        id: i,
+                        strategy: strategies[Math.floor(Math.random() * strategies.length)],
+                        balance: 5000 + Math.random() * 10000,
+                        position: 0,
+                        lastAction: 'none',
+                        pnl: 0,
+                        confidence: Math.random(),
+                        active: true
+                    });
+                }
+            }
+
+            generateAgentAction(agent) {
+                const priceChange = this.priceHistory.length > 1 ? 
+                    this.currentPrice - this.priceHistory[this.priceHistory.length - 2] : 0;
+                
+                let action = 'none';
+                let quantity = Math.floor(Math.random() * 10) + 1;
+                let price = this.currentPrice;
+                
+                switch (agent.strategy) {
+                    case 'momentum':
+                        if (priceChange > 0.1) {
+                            action = 'buy';
+                            price = this.askPrice + Math.random() * 0.1;
+                        } else if (priceChange < -0.1) {
+                            action = 'sell';
+                            price = this.bidPrice - Math.random() * 0.1;
+                        }
+                        break;
+                        
+                    case 'reversal':
+                        if (priceChange > 0.2) {
+                            action = 'sell';
+                            price = this.bidPrice - Math.random() * 0.05;
+                        } else if (priceChange < -0.2) {
+                            action = 'buy';
+                            price = this.askPrice + Math.random() * 0.05;
+                        }
+                        break;
+                        
+                    case 'random':
+                        if (Math.random() < 0.1) {
+                            action = Math.random() < 0.5 ? 'buy' : 'sell';
+                            price = action === 'buy' ? this.askPrice + Math.random() * 0.2 : 
+                                                     this.bidPrice - Math.random() * 0.2;
+                        }
+                        break;
+                        
+                    case 'trend_following':
+                        const trend = this.priceHistory.slice(-5).reduce((a, b) => a + b, 0) / 5;
+                        if (this.currentPrice > trend) {
+                            action = 'buy';
+                            price = this.askPrice + Math.random() * 0.05;
+                        } else if (this.currentPrice < trend) {
+                            action = 'sell';
+                            price = this.bidPrice - Math.random() * 0.05;
+                        }
+                        break;
+                        
+                    case 'mean_reversion':
+                        const deviation = this.currentPrice - this.startPrice;
+                        if (deviation > 2) {
+                            action = 'sell';
+                            price = this.bidPrice;
+                        } else if (deviation < -2) {
+                            action = 'buy';
+                            price = this.askPrice;
+                        }
+                        break;
+                        
+                    case 'scalping':
+                        if (Math.random() < 0.3) {
+                            action = Math.random() < 0.5 ? 'buy' : 'sell';
+                            quantity = Math.floor(Math.random() * 3) + 1;
+                            price = action === 'buy' ? this.askPrice + 0.01 : this.bidPrice - 0.01;
+                        }
+                        break;
+                        
+                    case 'arbitrage':
+                        if (this.askPrice - this.bidPrice > 0.15) {
+                            action = Math.random() < 0.5 ? 'buy' : 'sell';
+                            price = action === 'buy' ? this.bidPrice + 0.05 : this.askPrice - 0.05;
+                        }
+                        break;
+                }
+                
+                return { action, quantity, price: Math.max(0.01, price) };
+            }
+
+            placeOrder(side, quantity, price, agentId = null) {
+                const order = {
+                    id: Date.now() + Math.random(),
+                    side,
+                    quantity,
+                    price: parseFloat(price.toFixed(2)),
+                    agentId,
+                    timestamp: Date.now()
+                };
+                
+                if (side === 'buy') {
+                    this.orders.bids.push(order);
+                    this.orders.bids.sort((a, b) => b.price - a.price);
+                } else {
+                    this.orders.asks.push(order);
+                    this.orders.asks.sort((a, b) => a.price - b.price);
+                }
+                
+                this.matchOrders();
+            }
+
+            matchOrders() {
+                while (this.orders.bids.length > 0 && this.orders.asks.length > 0) {
+                    const highestBid = this.orders.bids[0];
+                    const lowestAsk = this.orders.asks[0];
+                    
+                    if (highestBid.price >= lowestAsk.price) {
+                        const matchPrice = (highestBid.price + lowestAsk.price) / 2;
+                        const matchQuantity = Math.min(highestBid.quantity, lowestAsk.quantity);
+                        
+                        // Execute trade
+                        this.executeTrade(matchPrice, matchQuantity, highestBid.agentId, lowestAsk.agentId);
+                        
+                        // Update orders
+                        highestBid.quantity -= matchQuantity;
+                        lowestAsk.quantity -= matchQuantity;
+                        
+                        if (highestBid.quantity <= 0) this.orders.bids.shift();
+                        if (lowestAsk.quantity <= 0) this.orders.asks.shift();
+                    } else {
+                        break;
+                    }
+                }
+                
+                // Update bid/ask prices
+                this.updateBidAsk();
+            }
+
+            executeTrade(price, quantity, buyerId, sellerId) {
+                this.currentPrice = price;
+                this.totalVolume += quantity;
+                
+                // Update agent positions
+                if (buyerId !== null && buyerId < this.agents.length) {
+                    this.agents[buyerId].position += quantity;
+                    this.agents[buyerId].balance -= price * quantity;
+                }
+                if (sellerId !== null && sellerId < this.agents.length) {
+                    this.agents[sellerId].position -= quantity;
+                    this.agents[sellerId].balance += price * quantity;
+                }
+                
+                // Log transaction
+                this.transactions.unshift({
+                    price: price.toFixed(2),
+                    quantity,
+                    timestamp: new Date().toLocaleTimeString(),
+                    buyerId,
+                    sellerId
+                });
+                
+                if (this.transactions.length > 20) {
+                    this.transactions.pop();
+                }
+                
+                this.priceHistory.push(price);
+                if (this.priceHistory.length > 100) {
+                    this.priceHistory.shift();
+                }
+            }
+
+            updateBidAsk() {
+                if (this.orders.bids.length > 0) {
+                    this.bidPrice = this.orders.bids[0].price;
+                } else {
+                    this.bidPrice = this.currentPrice - 0.05 - Math.random() * 0.1;
+                }
+                
+                if (this.orders.asks.length > 0) {
+                    this.askPrice = this.orders.asks[0].price;
+                } else {
+                    this.askPrice = this.currentPrice + 0.05 + Math.random() * 0.1;
+                }
+            }
+
+            placeTrade(side, amount) {
+                const quantity = Math.floor(amount / this.currentPrice);
+                const price = side === 'long' ? this.askPrice : this.bidPrice;
+                
+                if (side === 'long') {
+                    this.position += quantity;
+                    this.portfolio -= amount;
+                    this.entryPrice = (this.entryPrice * (this.position - quantity) + price * quantity) / this.position;
+                } else {
+                    this.position -= quantity;
+                    this.portfolio += amount;
+                    if (this.position === 0) this.entryPrice = 0;
+                }
+                
+                this.placeOrder(side === 'long' ? 'buy' : 'sell', quantity, price);
+            }
+
+            updateAgents() {
+                this.agents.forEach(agent => {
+                    if (!agent.active || Math.random() > 0.3) return;
+                    
+                    const { action, quantity, price } = this.generateAgentAction(agent);
+                    
+                    if (action !== 'none' && agent.balance > price * quantity) {
+                        this.placeOrder(action, quantity, price, agent.id);
+                        agent.lastAction = action;
+                    }
+                    
+                    // Update agent PnL
+                    agent.pnl = agent.position * (this.currentPrice - (agent.entryPrice || this.currentPrice));
+                });
+            }
+
+            updateDisplay() {
+                // Price display
+                document.getElementById('currentPrice').textContent = `$${this.currentPrice.toFixed(2)}`;
+                document.getElementById('bidPrice').textContent = this.bidPrice.toFixed(2);
+                document.getElementById('askPrice').textContent = this.askPrice.toFixed(2);
+                
+                // Price change
+                const change = this.currentPrice - this.startPrice;
+                const changePercent = ((change / this.startPrice) * 100).toFixed(2);
+                const changeEl = document.getElementById('priceChange');
+                changeEl.textContent = `${change >= 0 ? '+' : ''}$${change.toFixed(2)} (${changePercent}%)`;
+                changeEl.className = `price-change ${change >= 0 ? 'positive' : 'negative'}`;
+                
+                // Portfolio stats
+                const pnl = this.position * (this.currentPrice - this.entryPrice);
+                document.getElementById('portfolio').textContent = `$${(this.portfolio + this.position * this.currentPrice).toFixed(0)}`;
+                document.getElementById('pnl').textContent = `$${pnl.toFixed(2)}`;
+                document.getElementById('pnl').className = `stat-value ${pnl >= 0 ? 'positive' : 'negative'}`;
+                document.getElementById('position').textContent = this.position;
+                document.getElementById('volume').textContent = this.totalVolume;
+                
+                // Order book
+                this.updateOrderBook();
+                
+                // Agent stats
+                this.updateAgentStats();
+                
+                // Transaction log
+                this.updateTransactionLog();
+                
+                // Update chart
+                this.updateChart();
+            }
+
+            updateOrderBook() {
+                const orderBookEl = document.getElementById('orderBook');
+                let html = '';
+                
+                // Show top 5 asks (sorted by price ascending)
+                const topAsks = this.orders.asks.slice(0, 5).reverse();
+                topAsks.forEach(order => {
+                    html += `<div class="order-row">
+                        <span class="ask">ASK $${order.price.toFixed(2)}</span>
+                        <span>${order.quantity}</span>
+                    </div>`;
+                });
+                
+                html += `<div class="order-row" style="border-top: 2px solid #4CAF50; border-bottom: 2px solid #4CAF50; text-align: center; font-weight: bold;">
+                    <span>SPREAD: $${(this.askPrice - this.bidPrice).toFixed(2)}</span>
+                </div>`;
+                
+                // Show top 5 bids (sorted by price descending)
+                const topBids = this.orders.bids.slice(0, 5);
+                topBids.forEach(order => {
+                    html += `<div class="order-row">
+                        <span class="bid">BID $${order.price.toFixed(2)}</span>
+                        <span>${order.quantity}</span>
+                    </div>`;
+                });
+                
+                orderBookEl.innerHTML = html;
+            }
+
+            updateAgentStats() {
+                const agentStatsEl = document.getElementById('agentStats');
+                const activeAgents = this.agents.filter(a => a.active);
+                document.getElementById('agentCount').textContent = activeAgents.length;
+                
+                let html = '';
+                activeAgents.slice(0, 8).forEach(agent => {
+                    const pnl = agent.position * (this.currentPrice - (agent.entryPrice || this.currentPrice));
+                    html += `<div class="agent-row">
+                        <span>Agent ${agent.id} (${agent.strategy})</span>
+                        <span class="${pnl >= 0 ? 'positive' : 'negative'}">$${pnl.toFixed(0)}</span>
+                    </div>`;
+                });
+                
+                agentStatsEl.innerHTML = html;
+            }
+
+            updateTransactionLog() {
+                const logEl = document.getElementById('transactionLog');
+                let html = '';
+                
+                this.transactions.slice(0, 8).forEach(tx => {
+                    html += `<div class="transaction-item">
+                        ${tx.timestamp}: ${tx.quantity} @ $${tx.price}
+                    </div>`;
+                });
+                
+                logEl.innerHTML = html;
+            }
+
+            setupChart() {
+                this.canvas = document.getElementById('priceChart');
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = this.canvas.offsetHeight;
+            }
+
+            updateChart() {
+                if (!this.ctx) return;
+                
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                
+                this.ctx.clearRect(0, 0, width, height);
+                
+                if (this.priceHistory.length < 2) return;
+                
+                const minPrice = Math.min(...this.priceHistory);
+                const maxPrice = Math.max(...this.priceHistory);
+                const priceRange = maxPrice - minPrice || 1;
+                
+                // Draw price line
+                this.ctx.strokeStyle = '#4CAF50';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                
+                this.priceHistory.forEach((price, index) => {
+                    const x = (index / (this.priceHistory.length - 1)) * width;
+                    const y = height - ((price - minPrice) / priceRange) * height;
+                    
+                    if (index === 0) {
+                        this.ctx.moveTo(x, y);
+                    } else {
+                        this.ctx.lineTo(x, y);
+                    }
+                });
+                
+                this.ctx.stroke();
+                
+                // Draw grid
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                this.ctx.lineWidth = 1;
+                
+                for (let i = 0; i <= 5; i++) {
+                    const y = (i / 5) * height;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(width, y);
+                    this.ctx.stroke();
+                }
+            }
+
+            startSimulation() {
+                setInterval(() => {
+                    this.updateAgents();
+                    this.updateDisplay();
+                }, 500);
+                
+                // Add some random market events
+                setInterval(() => {
+                    if (Math.random() < 0.1) {
+                        const eventSize = (Math.random() - 0.5) * 2;
+                        for (let i = 0; i < 10; i++) {
+                            const agent = this.agents[Math.floor(Math.random() * this.agents.length)];
+                            const action = eventSize > 0 ? 'buy' : 'sell';
+                            const quantity = Math.floor(Math.random() * 5) + 1;
+                            const price = this.currentPrice + eventSize;
+                            
+                            this.placeOrder(action, quantity, price, agent.id);
+                        }
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initialize simulator
+        const simulator = new TradingSimulator();
+
+        // User trading functions
+        function placeTrade(side) {
+            const amount = parseFloat(document.getElementById('tradeAmount').value) || 1000;
+            simulator.placeTrade(side, amount);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            simulator.setupChart();
+        });
+    </script>
+</body>
+</html>

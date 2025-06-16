@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Wave Interference Simulator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            font-family: 'Arial', sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .simulation-area {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .canvas-container {
+            position: relative;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            background: #000;
+        }
+        
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            min-width: 300px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .value-display {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2D Wave Interference Simulator</h1>
+        
+        <div class="simulation-area">
+            <div class="canvas-container">
+                <canvas id="waveCanvas" width="600" height="400"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="frequency">Frequency (Hz)</label>
+                    <input type="range" id="frequency" min="20" max="20000" step="1" value="20">
+                    <div class="value-display" id="frequencyValue">20 Hz</div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="amplitude">Amplitude</label>
+                    <input type="range" id="amplitude" min="0.1" max="2" step="0.1" value="1">
+                    <div class="value-display" id="amplitudeValue">1.0</div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="sandDensity">Sand Density</label>
+                    <input type="range" id="sandDensity" min="0.1" max="3" step="0.1" value="1">
+                    <div class="value-display" id="sandDensityValue">1.0</div>
+                </div>
+                
+                <button onclick="toggleAnimation()">Start/Stop Animation</button>
+                <button onclick="resetSand()">Reset Sand</button>
+                <button onclick="toggleWaveDisplay()">Toggle Wave Display</button>
+                
+                <div class="info">
+                    <strong>Instructions:</strong><br>
+                    • Click to place sound source<br>
+                    • Sand collects at wave nodes (dark areas)<br>
+                    • Sand is repelled from antinodes (bright areas)<br>
+                    • Adjust frequency to see different patterns
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box" style="background: #ff6b6b;"></div>
+                        <span>Peak</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box" style="background: #4ecdc4;"></div>
+                        <span>Trough</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box" style="background: #8B4513;"></div>
+                        <span>Sand</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let sourceX = canvas.width / 2;
+        let sourceY = canvas.height / 2;
+        let frequency = 2;
+        let amplitude = 1;
+        let time = 0;
+        let animating = false;
+        let showWaves = false;
+        let sandDensity = 1;
+        
+        // Sand particles
+        let sandParticles = [];
+        let default_sand = [];
+        let waveField = [];
+        
+        // Initialize wave field and sand
+        function initializeSimulation() {
+            waveField = [];
+            for (let y = 0; y < canvas.height; y += 2) {
+                waveField[y] = [];
+                for (let x = 0; x < canvas.width; x += 2) {
+                    waveField[y][x] = 0;
+                }
+            }
+            resetSand();
+        }
+        
+        function resetSand() {
+            sandParticles = [];
+            const numParticles = Math.floor(2000 * sandDensity);
+            
+            for (let i = 0; i < numParticles; i++) {
+                sandParticles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: 0,
+                    vy: 0,
+                    targetX: 0,
+                    targetY: 0
+                });
+            }
+        }
+        
+        function calculateWaveAmplitude(x, y, t) {
+            const dx = x - sourceX;
+            const dy = y - sourceY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance === 0) return 0;
+            
+            // Direct wave from source
+            const directWave = amplitude * Math.sin(2 * Math.PI * frequency * t - distance * 0.02) / (1 + distance * 0.01);
+            
+            // Reflected waves from boundaries
+            let reflectedWave = 0;
+            const reflectionStrength = 0.3;
+            
+            // Reflection from left wall
+            const leftDistance = Math.sqrt((x + sourceX) ** 2 + dy ** 2);
+            reflectedWave += reflectionStrength * amplitude * Math.sin(2 * Math.PI * frequency * t - leftDistance * 0.02) / (1 + leftDistance * 0.01);
+            
+            // Reflection from right wall
+            const rightDistance = Math.sqrt((2 * canvas.width - x - sourceX) ** 2 + dy ** 2);
+            reflectedWave += reflectionStrength * amplitude * Math.sin(2 * Math.PI * frequency * t - rightDistance * 0.02) / (1 + rightDistance * 0.01);
+            
+            // Reflection from top wall
+            const topDistance = Math.sqrt(dx ** 2 + (y + sourceY) ** 2);
+            reflectedWave += reflectionStrength * amplitude * Math.sin(2 * Math.PI * frequency * t - topDistance * 0.02) / (1 + topDistance * 0.01);
+            
+            // Reflection from bottom wall
+            const bottomDistance = Math.sqrt(dx ** 2 + (2 * canvas.height - y - sourceY) ** 2);
+            reflectedWave += reflectionStrength * amplitude * Math.sin(2 * Math.PI * frequency * t - bottomDistance * 0.02) / (1 + bottomDistance * 0.01);
+            
+            return directWave + reflectedWave;
+        }
+        
+        function updateWaveField() {
+            for (let y = 0; y < canvas.height; y += 2) {
+                for (let x = 0; x < canvas.width; x += 2) {
+                    waveField[y][x] = calculateWaveAmplitude(x, y, time);
+                }
+            }
+        }
+        
+        function updateSandParticles() {
+            for (let particle of sandParticles) {
+                // Get wave amplitude at particle position
+                const waveAmp = calculateWaveAmplitude(particle.x, particle.y, time);
+                const waveIntensity = Math.abs(waveAmp);
+                
+                // Calculate gradient for particle movement
+                const gradientStep = 0.2;
+                const leftAmp = calculateWaveAmplitude(particle.x - gradientStep, particle.y, time);
+                const rightAmp = calculateWaveAmplitude(particle.x + gradientStep, particle.y, time);
+                const topAmp = calculateWaveAmplitude(particle.x, particle.y - gradientStep, time);
+                const bottomAmp = calculateWaveAmplitude(particle.x, particle.y + gradientStep, time);
+                
+                const gradX = (Math.abs(rightAmp) - Math.abs(leftAmp)) / (2 * gradientStep);
+                const gradY = (Math.abs(bottomAmp) - Math.abs(topAmp)) / (2 * gradientStep);
+                
+                // Sand moves away from high amplitude areas (antinodes) toward low amplitude areas (nodes)
+                const force = 500;
+                particle.vx += -gradX * force;
+                particle.vy += -gradY * force;
+                
+                // Add some damping
+                particle.vx *= 0.7;
+                particle.vy *= 0.7;
+                
+                // Update position 
+                const sense = 2;
+                // if (Math.abs(particle.vx) >= sense)
+                    particle.x += particle.vx;
+                // if (Math.abs(particle.vy) >= sense)
+                    particle.y += particle.vy;
+                
+                // Boundary conditions
+                if (particle.x < 0) { particle.x = 0; particle.vx = 0; }
+                if (particle.x >= canvas.width) { particle.x = canvas.width - 1; particle.vx = 0; }
+                if (particle.y < 0) { particle.y = 0; particle.vy = 0; }
+                if (particle.y >= canvas.height) { particle.y = canvas.height - 1; particle.vy = 0; }
+            }
+        }
+        
+        function drawWaveField() {
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const waveY = Math.floor(y / 2) * 2;
+                    const waveX = Math.floor(x / 2) * 2;
+                    const amplitude = waveField[waveY] ? waveField[waveY][waveX] || 0 : 0;
+                    
+                    const index = (y * canvas.width + x) * 4;
+                    
+                    if (showWaves) {
+                        if (amplitude > 0) {
+                            // Positive amplitude - red
+                            data[index] = Math.min(255, 100 + amplitude * 100);     // Red
+                            data[index + 1] = 50;                                   // Green
+                            data[index + 2] = 50;                                   // Blue
+                        } else {
+                            // Negative amplitude - blue
+                            data[index] = 50;                                       // Red
+                            data[index + 1] = Math.min(255, 100 + Math.abs(amplitude) * 100); // Green
+                            data[index + 2] = Math.min(255, 150 + Math.abs(amplitude) * 100); // Blue
+                        }
+                    } else {
+                        // Dark background when waves are hidden
+                        data[index] = 20;
+                        data[index + 1] = 20;
+                        data[index + 2] = 30;
+                    }
+                    
+                    data[index + 3] = 255; // Alpha
+                }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+        }
+        
+        function drawSandParticles() {
+            ctx.fillStyle = '#8B4513';
+            for (let particle of sandParticles) {
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, 1, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function drawSource() {
+            ctx.fillStyle = '#FFD700';
+            ctx.strokeStyle = '#FFA500';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(sourceX, sourceY, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Animated rings
+            const ringRadius = (time * 30) % 50;
+            ctx.strokeStyle = `rgba(255, 215, 0, ${1 - ringRadius / 50})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(sourceX, sourceY, ringRadius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        function animate() {
+            if (!animating) return;
+            
+            time += 0.1;
+            
+            updateWaveField();
+            updateSandParticles();
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw components
+            drawWaveField();
+            drawSandParticles();
+            drawSource();
+            
+            requestAnimationFrame(animate);
+        }
+        
+        function toggleAnimation() {
+            animating = !animating;
+            if (animating) {
+                animate();
+            }
+        }
+        
+        function toggleWaveDisplay() {
+            showWaves = !showWaves;
+        }
+        
+        // Event listeners
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            sourceX = e.clientX - rect.left;
+            sourceY = e.clientY - rect.top;
+            // resetSand()
+
+        });
+        
+        document.getElementById('frequency').addEventListener('input', (e) => {
+            frequency = parseFloat(e.target.value);
+            document.getElementById('frequencyValue').textContent = frequency.toFixed(1) + ' Hz';
+            // resetSand()
+
+        });
+        
+        document.getElementById('amplitude').addEventListener('input', (e) => {
+            amplitude = parseFloat(e.target.value);
+            document.getElementById('amplitudeValue').textContent = amplitude.toFixed(1);
+        });
+        
+        document.getElementById('sandDensity').addEventListener('input', (e) => {
+            sandDensity = parseFloat(e.target.value);
+            document.getElementById('sandDensityValue').textContent = sandDensity.toFixed(1);
+            resetSand();
+        });
+        
+        // Initialize simulation
+        initializeSimulation();
+        
+        // Initial draw
+        updateWaveField();
+        drawWaveField();
+        drawSandParticles();
+        drawSource();
+    </script>
+</body>
+</html>
